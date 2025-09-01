@@ -272,7 +272,7 @@
       const agotado = p.cantidad <= 0 ? `<div class="agotado">NO DISPONIBLE</div>` : '';
       const oferta = p.descuento && p.descuento > 0 ? `<div class="etiqueta-oferta">${p.descuento}% OFF</div>` : '';
       const precioHTML = p.descuento && p.descuento > 0
-        ? `<p><span style="text-decoration: line-through; color: gray">${p.precio.toFixed(2)} S/.</span><br><strong style="color: orange;">${p.precioFinal.toFixed(2)} $</strong></p>`
+        ? `<p><span style="text-decoration: line-through; color: gray">${p.precio.toFixed(2)} $</span><br><strong style="color: orange;">${p.precioFinal.toFixed(2)} S/.</strong></p>`
         : `<p>${p.precio.toFixed(2)} S/.</p>`;
 
       div.innerHTML = `
@@ -295,6 +295,7 @@
 
 </body>
 </html>
+
 
 
 
