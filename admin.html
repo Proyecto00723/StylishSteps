@@ -237,8 +237,8 @@
         <div class="producto-content">
           <h3>${p.nombre}</h3>
           <p>${p.descripcion}</p>
-          <p><strong>Precio:</strong> <span style="text-decoration: ${p.descuento > 0 ? 'line-through' : 'none'};">${p.precio} $</span>
-          ${p.descuento > 0 ? `<br><strong style="color: orange;">Ahora: ${p.precioFinal} $</strong>` : ''}</p>
+          <p><strong>Precio:</strong> <span style="text-decoration: ${p.descuento > 0 ? 'line-through' : 'none'};">${p.precio} S/.</span>
+          ${p.descuento > 0 ? `<br><strong style="color: orange;">Ahora: ${p.precioFinal} S/.</strong>` : ''}</p>
           <p><strong>Stock:</strong> ${p.cantidad}</p>
           <p style="font-size: 12px; color: #aaa;">ID: ${p.id}</p>
           <div style="display: flex; gap: 10px; justify-content: center;">
@@ -365,4 +365,5 @@
 
 </body>
 </html>
+
 
