@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Usuario27</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1c1c1c;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.7);
+      position: relative;
+      text-align: center;
+      color: white;
+      height: 500px;
+      clip-path: ellipse(100% 85% at 50% 0%);
+      overflow: hidden;
+    }
+
+    header img {
+      width: 100px;
+    }
+
+    .fondo-header {
+      background: url('imagen.png') no-repeat center center/cover;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .overlay-header {
+      background-color: rgba(0, 0, 0, 0.267);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .contenido-header {
+      position: relative;
+      z-index: 3;
+      padding: 90px 15px;
+    }
+
+    .contenido-header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .contenido-header p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .contenido-header button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: rgb(255, 195, 31);
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .productos {
+      background-color: #1c1c1c;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .productos h2 {
+      font-size: 2em;
+      margin-bottom: 30px;
+    }
+
+    .productos-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .producto {
+      background: white;
+      color: black;
+      border-radius: 8px;
+      padding: 15px;
+      width: 280px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      text-align: center;
+      position: relative;
+    }
+
+    .producto img {
+      max-width: 100%;
+      border-radius: 5px;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .producto h3 {
+      margin: 10px 0 5px;
+    }
+
+    .producto p {
+      font-weight: bold;
+      color: #53b62c;
+    }
+
+    .producto button {
+      margin: 5px 5px;
+      background-color: #dd1d1d;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .producto button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #metodoPago {
+      background: white;
+      max-width: 400px;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      color: rgb(0, 0, 0);
+    }
+
+    .cerrar {
+      float: right;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .qr {
+      width: 200px;
+      margin: 10px 0;
+    }
+
+    .agotado {
+      position: absolute;
+      top: 35px;
+      left: -20px;
+      background: red;
+      color: white;
+      transform: rotate(-45deg);
+      width: 150px;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    .etiqueta-oferta {
+      position: absolute;
+      top: 35px;
+      right: -20px;
+      background-color: orange;
+      color: white;
+      transform: rotate(45deg);
+      width: 150px;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    footer {
+      background-color: #ec0c0ce3;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="fondo-header"></div>
+  <div class="overlay-header"></div>
+  <div class="contenido-header">
+    <img src="descarga.png" alt="Logo" />
+    <h1>Bienvenido a Stylish Steps</h1>
+    <p>Explora el arte de vestir con estilo, elegancia y comodidad para él y para ella.</p>
+    <button onclick="document.getElementById('productos').scrollIntoView({ behavior: 'smooth' })">Comprar ahora</button>
+  </div>
+</header>
+
+<section class="productos" id="productos">
+  <h2>Nuestras Nuevas Colecciones</h2>
+  <p>¡Encuentra el match ideal para tus pies.!</p><br>
+
+  <div class="productos-grid" id="vistaProductos">
+    <!-- Se insertan aquí dinámicamente -->
+  </div>
+</section>
+
+<!-- Modal de pago -->
+<div class="overlay" id="modalOverlay">
+  <div id="metodoPago">
+    <span class="cerrar" onclick="cerrarPago()">×</span>
+    <h3>Métodos de Pago</h3>
+    <p><strong>Yape / Plin:</strong> 912345678</p>
+    <img class="qr" src="qr.jpeg" alt="QR de pago" />
+    <p><strong style="color:rgba(0, 0, 0, 0.432);"> PayPal: No Disponible  </strong> </p>
+    <p><strong>Ubicación del producto:</strong> Paiján</p>
+    <p><strong  style="color:rgb(0, 0, 0);">Confirmación por WhatsApp:</strong></p>
+    <a href="https://wa.me/925944615" target="_blank"  style="color:rgb(73, 70, 255)">Contactar al encargado</a>
+    <br /><br />
+    <strong style="color:green">✅ ¡Pago Seguro!</strong>
+  </div>
+</div>
+<div class="overlay" id="modalDetalle">
+  <div id="detalleProducto" style="background:white; max-width: 400px; margin: 10% auto; padding: 20px; border-radius: 8px; color: black; position: relative; text-align: left;">
+    <span class="cerrar" onclick="cerrarDetalle()" style="position:absolute; top:10px; right:15px;">×</span>
+    <h3 id="detalleTitulo"></h3>
+    <p id="detalleDescripcion"></p>
+  </div>
+</div>
+<footer>
+  &copy; 2025 StepPair | match ideal para tus pies!
+</footer>
+<script>
+  function abrirPago() {
+    document.getElementById('modalOverlay').style.display = 'block';
+  }
+
+  function cerrarPago() {
+    document.getElementById('modalOverlay').style.display = 'none';
+  }
+   function abrirDetalle(titulo, descripcion) {
+    document.getElementById('detalleTitulo').innerText = titulo;
+    document.getElementById('detalleDescripcion').innerText = descripcion;
+    document.getElementById('modalDetalle').style.display = 'block';
+  }
+
+  function cerrarDetalle() {
+    document.getElementById('modalDetalle').style.display = 'none';
+  }
+
+  function mostrarProductos() {
+    const productos = JSON.parse(localStorage.getItem('productos')) || [];
+    const contenedor = document.getElementById('vistaProductos');
+    contenedor.innerHTML = '';
+
+    productos.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'producto';
+
+      const agotado = p.cantidad <= 0 ? `<div class="agotado">NO DISPONIBLE</div>` : '';
+      const oferta = p.descuento && p.descuento > 0 ? `<div class="etiqueta-oferta">${p.descuento}% OFF</div>` : '';
+      const precioHTML = p.descuento && p.descuento > 0
+        ? `<p><span style="text-decoration: line-through; color: gray">S/.${p.precio.toFixed(2)}</span><br><strong style="color: orange;">S/. ${p.precioFinal.toFixed(2)} </strong></p>`
+        : `<p>${p.precio.toFixed(2)}$</p>`;
+
+      div.innerHTML = `
+        ${agotado}
+        ${oferta}
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        ${precioHTML}
+        <div class="info-adicional">ID: ${p.id} | Stock: ${p.cantidad}</div>
+        <button onclick="abrirPago()" ${p.cantidad <= 0 ? 'disabled' : ''}>Comprar</button>
+        <button onclick="abrirDetalle('${p.nombre}', '${p.descripcion}')">Detalles</button>
+      `;
+
+      contenedor.appendChild(div);
+    });
+  }
+
+  window.onload = mostrarProductos;
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
