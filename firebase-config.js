@@ -4,12 +4,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-
 
 // ⚠️ Copia tu configuración de Firebase aquí
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyDSpeFHjt5Mqytow2Ct_yYJ-4YiRL4ydPo",
+  authDomain: "mi-tienda-7a97a.firebaseapp.com",
+  projectId: "mi-tienda-7a97a",
+  storageBucket: "mi-tienda-7a97a.firebasestorage.app",
+  messagingSenderId: "380330280917",
+  appId: "1:380330280917:web:c0d248b5bde09997fa9f5c"
 };
 
 // Inicializar Firebase
