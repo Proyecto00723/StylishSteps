@@ -1,23 +1,19 @@
-// app.js
-import { db } from "./firebase-config.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+// firebase-config.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// Contenedor donde se mostrarán los productos
-const contenedor = document.getElementById("productos");
+// ⚠️ Copia tu configuración de Firebase aquí
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "ID",
+  appId: "APP_ID"
+};
 
-// Leer productos de Firestore
-async function cargarProductos() {
-  const querySnapshot = await getDocs(collection(db, "productos"));
-  querySnapshot.forEach((doc) => {
-    const producto = doc.data();
-    contenedor.innerHTML += `
-      <div class="producto">
-        <h3>${producto.nombre}</h3>
-        <p>Precio: ${producto.precio}</p>
-        <img src="${producto.imagen}" width="100"/>
-      </div>
-    `;
-  });
-}
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-cargarProductos();
+export { db };
