@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stylish Steps</title>
+  <title>Usuario27</title>
   <style>
     body {
       margin: 0;
@@ -118,7 +118,7 @@
       background-color: #007bff;
       color: #fff;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 15px;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -179,10 +179,10 @@
 
 <section class="productos" id="productos">
   <h2>Nuestras Nuevas Colecciones</h2>
-  <p>¡Encuentra el match ideal para tus pies!</p><br>
+  <p>¡Encuentra el match ideal para tus pies.!</p><br>
 
   <div class="productos-grid" id="vistaProductos">
-    <!-- Productos dinámicos -->
+    <!-- Se insertan aquí dinámicamente desde Firebase -->
   </div>
 </section>
 
@@ -190,66 +190,71 @@
   &copy; 2025 StepPair | match ideal para tus pies!
 </footer>
 
+<!-- Scripts -->
 <script type="module">
   import { db } from "./firebase-config.js";
-  import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  import { collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  const vista = document.getElementById("vistaProductos");
+  const contenedor = document.getElementById("vistaProductos");
 
   async function cargarProductos() {
-    try {
-      const querySnapshot = await getDocs(collection(db, "productos"));
-      vista.innerHTML = "";
-      querySnapshot.forEach((d) => {
-        const p = d.data();
-        const id = d.id;
-
-        vista.innerHTML += `
-          <div class="producto">
-            ${p.cantidad === 0 ? '<div class="agotado">Agotado</div>' : ""}
-            ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ""}
-            <img src="${p.imagen}" alt="${p.nombre}" />
-            <h3>${p.nombre}</h3>
-            <p>${p.descripcion}</p>
-            <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-            ${p.descuento > 0 ? `<p style="color:orange;"><strong>Precio final: S/. ${p.precioFinal.toFixed(2)}</strong></p>` : ""}
-            <p><strong>Stock:</strong> ${p.cantidad}</p>
-            <p style="font-size:12px; color:#777;">ID: ${id}</p>
-            <div style="margin-top:10px;">
-              <button onclick="venderProducto('${id}', ${p.cantidad})" ${p.cantidad === 0 ? "disabled" : ""}>Vender</button>
-              <button style="background-color:orange;" onclick="reembolsarProducto('${id}', ${p.cantidad}, ${p.stockMaximo || p.cantidad})" ${p.cantidad >= (p.stockMaximo || p.cantidad) ? "disabled" : ""}>Reembolsar</button>
-            </div>
-          </div>
-        `;
-      });
-    } catch (error) {
-      vista.innerHTML = `<p>Error al cargar productos. Revisa la conexión a Firebase.</p>`;
-      console.error(error);
-    }
+    contenedor.innerHTML = "Cargando...";
+    const querySnapshot = await getDocs(collection(db, "productos"));
+    contenedor.innerHTML = "";
+    querySnapshot.forEach((docSnap) => {
+      const p = docSnap.data();
+      const id = docSnap.id;
+      const div = document.createElement("div");
+      div.className = "producto";
+      div.innerHTML = `
+        ${p.cantidad === 0 ? '<div class="agotado">Agotado</div>' : ""}
+        ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ""}
+        <img src="${p.imagen}" alt="${p.nombre}" />
+        <h3>${p.nombre}</h3>
+        <p>${p.descripcion}</p>
+        <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
+        ${p.descuento > 0 ? `<p style="color:orange"><strong>Final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
+        <p><strong>Stock:</strong> ${p.cantidad}</p>
+        <p style="font-size:12px; color:gray;">ID: ${id}</p>
+        <div>
+          <button onclick="venderProducto('${id}')" ${p.cantidad === 0 ? "disabled" : ""}>Vender</button>
+          <button style="background-color:orange;" onclick="rembolsarProducto('${id}')" ${p.cantidad >= (p.stockMaximo || p.cantidad) ? "disabled" : ""}>Reembolsar</button>
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
   }
 
-  window.venderProducto = async function(id, cantidad) {
-    if (cantidad <= 0) return alert("⚠️ No hay stock disponible.");
-
-    const confirmar = confirm("¿Deseas vender 1 unidad?");
-    if (!confirmar) return;
-
+  // Función vender
+  window.venderProducto = async function(id) {
     const ref = doc(db, "productos", id);
-    await updateDoc(ref, { cantidad: cantidad - 1 });
-    alert("✅ Producto vendido.");
-    cargarProductos();
+    const snapshot = await getDocs(collection(db, "productos"));
+    const producto = snapshot.docs.find(d => d.id === id).data();
+
+    if (producto.cantidad > 0) {
+      await updateDoc(ref, { cantidad: producto.cantidad - 1 });
+      alert("✅ Producto vendido.");
+      cargarProductos();
+    } else {
+      alert("⚠️ Sin stock disponible.");
+    }
   };
 
-  window.reembolsarProducto = async function(id, cantidad, stockMaximo) {
-    if (cantidad >= stockMaximo) return alert("⚠️ No puedes reembolsar más. Stock máximo alcanzado.");
-
-    const confirmar = confirm("¿Deseas reembolsar 1 unidad?");
-    if (!confirmar) return;
-
+  // Función reembolsar
+  window.rembolsarProducto = async function(id) {
     const ref = doc(db, "productos", id);
-    await updateDoc(ref, { cantidad: cantidad + 1 });
-    alert("🔁 Producto reembolsado.");
-    cargarProductos();
+    const snapshot = await getDocs(collection(db, "productos"));
+    const producto = snapshot.docs.find(d => d.id === id).data();
+
+    const stockMax = producto.stockMaximo || producto.cantidadInicial || producto.cantidad;
+
+    if (producto.cantidad < stockMax) {
+      await updateDoc(ref, { cantidad: producto.cantidad + 1 });
+      alert("🔁 Producto reembolsado.");
+      cargarProductos();
+    } else {
+      alert(`⚠️ No puedes reembolsar más, stock máximo (${stockMax}) alcanzado.`);
+    }
   };
 
   cargarProductos();
