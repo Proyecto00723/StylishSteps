@@ -93,7 +93,19 @@
     }
 
     .producto h3 { margin: 10px 0 5px; }
-    .producto p { font-weight: bold; color: #53b62c; }
+    .producto p { margin: 5px 0; }
+
+    .precio-original {
+      text-decoration: line-through;
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .precio-descuento {
+      font-weight: bold;
+      color: #53b62c;
+      font-size: 1.1em;
+    }
 
     .producto button {
       margin: 5px 5px;
@@ -103,6 +115,10 @@
       padding: 10px 15px;
       border-radius: 5px;
       cursor: pointer;
+    }
+
+    .producto button.ver-detalle {
+      background-color: #555;
     }
 
     .producto button:disabled {
@@ -171,7 +187,7 @@
 
 <script type="module">
   import { db } from "./firebase-config.js";
-  import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
   const vistaProductos = document.getElementById("vistaProductos");
 
@@ -183,44 +199,39 @@
         const p = docSnap.data();
         const div = document.createElement("div");
         div.className = "producto";
+
+        const precioFinal = p.descuento > 0 ? (p.precio * (1 - p.descuento / 100)) : p.precio;
+
         div.innerHTML = `
           ${p.cantidad <= 0 ? '<div class="agotado">AGOTADO</div>' : ''}
           ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+
           <img src="${p.imagen}" alt="${p.nombre}" />
           <h3>${p.nombre}</h3>
-          <p>Precio: S/. ${p.precioFinal.toFixed(2)}</p>
-          <p>Stock: ${p.cantidad}</p>
-          <button onclick="venderProducto('${docSnap.id}', ${p.cantidad})" ${p.cantidad <= 0 ? 'disabled' : ''}>Vender</button>
-          <button onclick="reembolsarProducto('${docSnap.id}', ${p.cantidad}, ${p.stockInicial || p.cantidad})">Reembolsar</button>
+          <p><strong>ID:</strong> ${docSnap.id}</p>
+          <p><strong>Stock:</strong> ${p.cantidad}</p>
+          ${p.descuento > 0 
+            ? `<p class="precio-original">S/. ${p.precio.toFixed(2)}</p>
+               <p class="precio-descuento">S/. ${precioFinal.toFixed(2)} (Descuento ${p.descuento}%)</p>`
+            : `<p class="precio-descuento">S/. ${p.precio.toFixed(2)}</p>`}
+          
+          <button onclick="comprarProducto('${docSnap.id}')" ${p.cantidad <= 0 ? 'disabled' : ''}>Comprar</button>
+          <button class="ver-detalle" onclick="verDetalle('${docSnap.id}')">Ver detalle</button>
         `;
         vistaProductos.appendChild(div);
       });
     } catch (error) {
-      vistaProductos.innerHTML = "Error al cargar productos. Revisa tu conexión o configuración de Firebase.";
+      vistaProductos.innerHTML = "Error al cargar productos.";
       console.error(error);
     }
   }
 
-  // Vender producto
-  window.venderProducto = async (id, cantidad) => {
-    if (cantidad <= 0) {
-      alert("❌ No hay stock disponible.");
-      return;
-    }
-    const ref = doc(db, "productos", id);
-    await updateDoc(ref, { cantidad: cantidad - 1 });
-    cargarProductos();
+  window.comprarProducto = (id) => {
+    alert(`🛒 Producto ${id} agregado al carrito (lógica por implementar).`);
   };
 
-  // Reembolsar producto
-  window.reembolsarProducto = async (id, cantidad, stockInicial) => {
-    if (cantidad >= stockInicial) {
-      alert("⚠️ No puedes reembolsar más de lo registrado inicialmente.");
-      return;
-    }
-    const ref = doc(db, "productos", id);
-    await updateDoc(ref, { cantidad: cantidad + 1 });
-    cargarProductos();
+  window.verDetalle = (id) => {
+    alert(`ℹ️ Ver detalle del producto con ID: ${id}`);
   };
 
   cargarProductos();
