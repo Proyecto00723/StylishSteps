@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Usuario27</title>
+  <title>Stylish Steps</title>
   <style>
     body {
       margin: 0;
@@ -21,9 +21,7 @@
       overflow: hidden;
     }
 
-    header img {
-      width: 100px;
-    }
+    header img { width: 100px; }
 
     .fondo-header {
       background: url('imagen.png') no-repeat center center/cover;
@@ -47,15 +45,8 @@
       padding: 90px 15px;
     }
 
-    .contenido-header h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    .contenido-header p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
+    .contenido-header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .contenido-header p { font-size: 1.2em; margin-bottom: 20px; }
 
     .contenido-header button {
       padding: 10px 20px;
@@ -74,10 +65,7 @@
       text-align: center;
     }
 
-    .productos h2 {
-      font-size: 2em;
-      margin-bottom: 30px;
-    }
+    .productos h2 { font-size: 2em; margin-bottom: 30px; }
 
     .productos-grid {
       display: flex;
@@ -104,26 +92,38 @@
       object-fit: cover;
     }
 
-    .producto h3 {
-      margin: 10px 0 5px;
+    .producto h3 { margin: 10px 0 5px; }
+    .producto p { font-weight: bold; color: #53b62c; }
+
+    .botones-acciones {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .producto p {
-      font-weight: bold;
-      color: #53b62c;
-    }
-
-    .producto button {
-      margin: 5px 5px;
+    .vender-btn {
       background-color: #007bff;
-      color: #fff;
+      color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .producto button:disabled {
+    .reembolsar-btn {
+      background-color: orange;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .vender-btn:disabled,
+    .reembolsar-btn:disabled {
       background-color: gray;
       cursor: not-allowed;
     }
@@ -179,86 +179,83 @@
 
 <section class="productos" id="productos">
   <h2>Nuestras Nuevas Colecciones</h2>
-  <p>¡Encuentra el match ideal para tus pies.!</p><br>
-
-  <div class="productos-grid" id="vistaProductos">
-    <!-- Se insertan aquí dinámicamente desde Firebase -->
-  </div>
+  <p>¡Encuentra el match ideal para tus pies!</p><br>
+  <div class="productos-grid" id="vistaProductos">Cargando productos...</div>
 </section>
 
 <footer>
-  &copy; 2025 StepPair | match ideal para tus pies!
+  &copy; 2025 StepPair | ¡Match ideal para tus pies!
 </footer>
 
-<!-- Scripts -->
 <script type="module">
   import { db } from "./firebase-config.js";
   import { collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  const contenedor = document.getElementById("vistaProductos");
+  const vistaProductos = document.getElementById("vistaProductos");
 
   async function cargarProductos() {
-    contenedor.innerHTML = "Cargando...";
-    const querySnapshot = await getDocs(collection(db, "productos"));
-    contenedor.innerHTML = "";
-    querySnapshot.forEach((docSnap) => {
-      const p = docSnap.data();
-      const id = docSnap.id;
-      const div = document.createElement("div");
-      div.className = "producto";
-      div.innerHTML = `
-        ${p.cantidad === 0 ? '<div class="agotado">Agotado</div>' : ""}
-        ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ""}
-        <img src="${p.imagen}" alt="${p.nombre}" />
-        <h3>${p.nombre}</h3>
-        <p>${p.descripcion}</p>
-        <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-        ${p.descuento > 0 ? `<p style="color:orange"><strong>Final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
-        <p><strong>Stock:</strong> ${p.cantidad}</p>
-        <p style="font-size:12px; color:gray;">ID: ${id}</p>
-        <div>
-          <button onclick="venderProducto('${id}')" ${p.cantidad === 0 ? "disabled" : ""}>Vender</button>
-          <button style="background-color:orange;" onclick="rembolsarProducto('${id}')" ${p.cantidad >= (p.stockMaximo || p.cantidad) ? "disabled" : ""}>Reembolsar</button>
-        </div>
-      `;
-      contenedor.appendChild(div);
-    });
+    try {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      vistaProductos.innerHTML = "";
+      querySnapshot.forEach((documento) => {
+        const p = documento.data();
+        const id = documento.id;
+
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.innerHTML = `
+          ${p.cantidad <= 0 ? '<div class="agotado">AGOTADO</div>' : ''}
+          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+          <img src="${p.imagen}" alt="${p.nombre}" />
+          <h3>${p.nombre}</h3>
+          <p>Precio: S/. ${p.precioFinal.toFixed(2)}</p>
+          <p>Stock: ${p.cantidad}</p>
+          <div class="botones-acciones">
+            <button class="vender-btn" ${p.cantidad <= 0 ? 'disabled' : ''} onclick="venderProducto('${id}', ${p.cantidad})">Vender</button>
+            <button class="reembolsar-btn" ${p.cantidad >= (p.stockMaximo || p.cantidad) ? 'disabled' : ''} onclick="reembolsarProducto('${id}', ${p.cantidad}, ${p.stockMaximo || p.cantidad})">Reembolsar</button>
+          </div>
+        `;
+        vistaProductos.appendChild(div);
+      });
+    } catch (error) {
+      vistaProductos.innerHTML = "Error al cargar productos. Revisa tu conexión o configuración de Firebase.";
+      console.error(error);
+    }
   }
 
-  // Función vender
-  window.venderProducto = async function(id) {
-    const ref = doc(db, "productos", id);
-    const snapshot = await getDocs(collection(db, "productos"));
-    const producto = snapshot.docs.find(d => d.id === id).data();
-
-    if (producto.cantidad > 0) {
-      await updateDoc(ref, { cantidad: producto.cantidad - 1 });
-      alert("✅ Producto vendido.");
+  // 🟦 Vender producto
+  window.venderProducto = async (id, cantidad) => {
+    if (cantidad <= 0) return alert("⚠️ No hay stock disponible.");
+    const confirmar = confirm("¿Deseas vender 1 unidad?");
+    if (!confirmar) return;
+    try {
+      const ref = doc(db, "productos", id);
+      await updateDoc(ref, { cantidad: cantidad - 1 });
+      alert("✅ Venta registrada");
       cargarProductos();
-    } else {
-      alert("⚠️ Sin stock disponible.");
+    } catch (error) {
+      alert("❌ Error al vender: " + error.message);
     }
   };
 
-  // Función reembolsar
-  window.rembolsarProducto = async function(id) {
-    const ref = doc(db, "productos", id);
-    const snapshot = await getDocs(collection(db, "productos"));
-    const producto = snapshot.docs.find(d => d.id === id).data();
-
-    const stockMax = producto.stockMaximo || producto.cantidadInicial || producto.cantidad;
-
-    if (producto.cantidad < stockMax) {
-      await updateDoc(ref, { cantidad: producto.cantidad + 1 });
-      alert("🔁 Producto reembolsado.");
+  // 🟧 Reembolsar producto
+  window.reembolsarProducto = async (id, cantidad, stockMaximo) => {
+    if (cantidad >= stockMaximo)
+      return alert(`⚠️ No puedes reembolsar más unidades. El stock ya está en el máximo (${stockMaximo}).`);
+    
+    const confirmar = confirm("¿Deseas reembolsar 1 unidad?");
+    if (!confirmar) return;
+    try {
+      const ref = doc(db, "productos", id);
+      await updateDoc(ref, { cantidad: cantidad + 1 });
+      alert("🔁 Producto reembolsado");
       cargarProductos();
-    } else {
-      alert(`⚠️ No puedes reembolsar más, stock máximo (${stockMax}) alcanzado.`);
+    } catch (error) {
+      alert("❌ Error al reembolsar: " + error.message);
     }
   };
 
   cargarProductos();
 </script>
-
 </body>
 </html>
