@@ -3,210 +3,257 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Administración</title>
+  <title>Stylish Steps</title>
   <style>
     body {
-      display: flex;
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #181818;
+      background-color: #1c1c1c;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.7);
+      position: relative;
+      text-align: center;
       color: white;
+      height: 500px;
+      clip-path: ellipse(100% 85% at 50% 0%);
+      overflow: hidden;
     }
 
-    .sidebar {
-      width: 300px;
-      background: #111;
-      padding: 20px;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.6);
+    header img {
+      width: 100px;
     }
 
-    .sidebar input, .sidebar textarea, .sidebar button {
+    .fondo-header {
+      background: url('imagen.png') no-repeat center center/cover;
+      position: absolute;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      box-sizing: border-box;
+      height: 100%;
+      z-index: 1;
     }
 
-    .sidebar button {
-      background-color: #28a745;
+    .overlay-header {
+      background-color: rgba(0, 0, 0, 0.267);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .contenido-header {
+      position: relative;
+      z-index: 3;
+      padding: 90px 15px;
+    }
+
+    .contenido-header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .contenido-header p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .contenido-header button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: rgb(255, 195, 31);
       color: white;
-      font-weight: bold;
+      border: none;
       cursor: pointer;
+      border-radius: 5px;
     }
 
-    .main {
-      flex: 1;
-      padding: 20px;
+    .productos {
+      background-color: #1c1c1c;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .productos h2 {
+      font-size: 2em;
+      margin-bottom: 30px;
+    }
+
+    .productos-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
     }
 
     .producto {
-      background: #333;
+      background: white;
+      color: black;
+      border-radius: 8px;
       padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      display: flex;
-      gap: 20px;
-      align-items: center;
+      width: 280px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      text-align: center;
       position: relative;
     }
 
     .producto img {
-      width: 140px;
-      height: 120px;
-      object-fit: cover;
+      max-width: 100%;
       border-radius: 5px;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .producto h3 {
+      margin: 10px 0 5px;
+    }
+
+    .producto p {
+      font-weight: bold;
+      color: #53b62c;
+    }
+
+    .producto button {
+      margin: 5px 5px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .producto button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    .agotado {
+      position: absolute;
+      top: 35px;
+      left: -20px;
+      background: red;
+      color: white;
+      transform: rotate(-45deg);
+      width: 150px;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: bold;
+      pointer-events: none;
     }
 
     .etiqueta-oferta {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 35px;
+      right: -20px;
       background-color: orange;
       color: white;
-      font-size: 12px;
+      transform: rotate(45deg);
+      width: 150px;
+      text-align: center;
+      font-size: 0.9em;
       font-weight: bold;
-      padding: 4px 8px;
-      border-top-left-radius: 5px;
-      border-bottom-right-radius: 5px;
+      pointer-events: none;
     }
 
-    .btn-eliminar {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    .btn-eliminar:hover {
-      background: darkred;
-    }
-
-    .header-tienda {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1rem;
-      color: rgb(255, 3, 3);
-      background-color: #ffffff4b;
-      padding: 5px 15px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .logo-tienda {
-      height: 35px;
-      width: auto;
-      object-fit: contain;
+    footer {
+      background-color: #ec0c0ce3;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
     }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Agregar Producto</h2>
-    <form id="formProducto">
-      <input type="text" name="nombre" placeholder="Nombre del producto" required />
-      <input type="text" name="imagen" placeholder="URL de imagen" required />
-      <textarea name="descripcion" placeholder="Descripción" required></textarea>
-      <input type="number" name="precio" placeholder="Precio (S/.)" required />
-      <input type="number" name="cantidad" placeholder="Cantidad disponible" required />
-      <input type="number" name="descuento" placeholder="Descuento (%)" min="0" max="100" />
-      <button type="submit">Registrar Producto</button>
-      <button type="button" onclick="location.href='index.html'">🌐 Ver Tienda</button>
-    </form>
+
+<header>
+  <div class="fondo-header"></div>
+  <div class="overlay-header"></div>
+  <div class="contenido-header">
+    <img src="descarga.png" alt="Logo" />
+    <h1>Bienvenido a Stylish Steps</h1>
+    <p>Explora el arte de vestir con estilo, elegancia y comodidad para él y para ella.</p>
+    <button onclick="document.getElementById('productos').scrollIntoView({ behavior: 'smooth' })">Comprar ahora</button>
   </div>
+</header>
 
-  <div class="main">
-    <h2>Productos en Firebase</h2>
-    <div id="listaProductos">Cargando productos...</div>
+<section class="productos" id="productos">
+  <h2>Nuestras Nuevas Colecciones</h2>
+  <p>¡Encuentra el match ideal para tus pies!</p><br>
+
+  <div class="productos-grid" id="vistaProductos">
+    <!-- Productos dinámicos -->
   </div>
+</section>
 
-  <div class="header-tienda">
-    <img src="descarga.png" alt="STEPPAIR" class="logo-tienda" />
-    <h2>Stylish Steps</h2>
-  </div>
+<footer>
+  &copy; 2025 StepPair | match ideal para tus pies!
+</footer>
 
-  <script type="module">
-    import { db } from "./firebase-config.js";
-    import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+<script type="module">
+  import { db } from "./firebase-config.js";
+  import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    const form = document.getElementById("formProducto");
-    const lista = document.getElementById("listaProductos");
+  const vista = document.getElementById("vistaProductos");
 
-    // 📌 Mostrar productos
-    async function mostrarProductos() {
-      lista.innerHTML = "Cargando productos...";
+  async function cargarProductos() {
+    try {
       const querySnapshot = await getDocs(collection(db, "productos"));
-      lista.innerHTML = "";
-      querySnapshot.forEach((docSnap) => {
-        const p = docSnap.data();
-        const id = docSnap.id;
-        const div = document.createElement("div");
-        div.className = "producto";
-        div.innerHTML = `
-          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
-          <button class="btn-eliminar" onclick="eliminarProducto('${id}')">🗑</button>
-          <img src="${p.imagen}" alt="${p.nombre}" />
-          <div>
+      vista.innerHTML = "";
+      querySnapshot.forEach((d) => {
+        const p = d.data();
+        const id = d.id;
+
+        vista.innerHTML += `
+          <div class="producto">
+            ${p.cantidad === 0 ? '<div class="agotado">Agotado</div>' : ""}
+            ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ""}
+            <img src="${p.imagen}" alt="${p.nombre}" />
             <h3>${p.nombre}</h3>
             <p>${p.descripcion}</p>
             <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-            <p><strong>Stock actual:</strong> ${p.cantidad}</p>
-            <p><strong>Stock máximo:</strong> ${p.stockMaximo || p.cantidad}</p>
-            ${p.descuento > 0 ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
+            ${p.descuento > 0 ? `<p style="color:orange;"><strong>Precio final: S/. ${p.precioFinal.toFixed(2)}</strong></p>` : ""}
+            <p><strong>Stock:</strong> ${p.cantidad}</p>
+            <p style="font-size:12px; color:#777;">ID: ${id}</p>
+            <div style="margin-top:10px;">
+              <button onclick="venderProducto('${id}', ${p.cantidad})" ${p.cantidad === 0 ? "disabled" : ""}>Vender</button>
+              <button style="background-color:orange;" onclick="reembolsarProducto('${id}', ${p.cantidad}, ${p.stockMaximo || p.cantidad})" ${p.cantidad >= (p.stockMaximo || p.cantidad) ? "disabled" : ""}>Reembolsar</button>
+            </div>
           </div>
         `;
-        lista.appendChild(div);
       });
+    } catch (error) {
+      vista.innerHTML = `<p>Error al cargar productos. Revisa la conexión a Firebase.</p>`;
+      console.error(error);
     }
+  }
 
-    // 📌 Registrar producto
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = {
-        nombre: form.nombre.value,
-        descripcion: form.descripcion.value,
-        precio: parseFloat(form.precio.value),
-        cantidad: parseInt(form.cantidad.value),
-        descuento: parseFloat(form.descuento.value) || 0,
-        imagen: form.imagen.value,
-      };
+  window.venderProducto = async function(id, cantidad) {
+    if (cantidad <= 0) return alert("⚠️ No hay stock disponible.");
 
-      // ✅ Guardar el stock máximo para controlar reembolsos
-      data.stockMaximo = data.cantidad;
-      data.precioFinal = data.descuento > 0
-        ? data.precio - (data.precio * data.descuento / 100)
-        : data.precio;
+    const confirmar = confirm("¿Deseas vender 1 unidad?");
+    if (!confirmar) return;
 
-      try {
-        await addDoc(collection(db, "productos"), data);
-        alert("✅ Producto guardado en Firestore");
-        form.reset();
-        mostrarProductos();
-      } catch (error) {
-        alert("❌ Error al guardar: " + error.message);
-      }
-    });
+    const ref = doc(db, "productos", id);
+    await updateDoc(ref, { cantidad: cantidad - 1 });
+    alert("✅ Producto vendido.");
+    cargarProductos();
+  };
 
-    // 📌 Eliminar producto
-    window.eliminarProducto = async function(id) {
-      const confirmar = confirm("⚠️ ¿Eliminar este producto?");
-      if (!confirmar) return;
-      await deleteDoc(doc(db, "productos", id));
-      alert("🗑 Producto eliminado");
-      mostrarProductos();
-    };
+  window.reembolsarProducto = async function(id, cantidad, stockMaximo) {
+    if (cantidad >= stockMaximo) return alert("⚠️ No puedes reembolsar más. Stock máximo alcanzado.");
 
-    mostrarProductos();
-  </script>
+    const confirmar = confirm("¿Deseas reembolsar 1 unidad?");
+    if (!confirmar) return;
+
+    const ref = doc(db, "productos", id);
+    await updateDoc(ref, { cantidad: cantidad + 1 });
+    alert("🔁 Producto reembolsado.");
+    cargarProductos();
+  };
+
+  cargarProductos();
+</script>
+
 </body>
 </html>
