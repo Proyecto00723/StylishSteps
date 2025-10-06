@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "mi-tienda-7a97a.firebasestorage.app",
   messagingSenderId: "380330280917",
   appId: "1:380330280917:web:c0d248b5bde09997fa9f5c"
-};;
+};
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
