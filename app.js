@@ -19,41 +19,52 @@ function cerrarDetalle() {
   document.getElementById('modalDetalle').style.display = 'none';
 }
 
+// Cargar productos desde Firestore
 async function mostrarProductos() {
   try {
     const querySnapshot = await getDocs(collection(db, "productos"));
     contenedor.innerHTML = "";
 
-    if (querySnapshot.empty) {
-      contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
-      return;
-    }
-
     querySnapshot.forEach((doc) => {
       const p = doc.data();
-      const agotado = p.cantidad <= 0 ? `<div class='agotado'>NO DISPONIBLE</div>` : '';
-      const oferta = p.descuento > 0 ? `<div class='etiqueta-oferta'>${p.descuento}% OFF</div>` : '';
-      const precioHTML = p.descuento > 0
-        ? `<p><span style='text-decoration: line-through; color: gray'>S/.${p.precio.toFixed(2)}</span><br><strong style='color: orange;'>S/.${p.precioFinal.toFixed(2)}</strong></p>`
-        : `<p>S/.${p.precio.toFixed(2)}</p>`;
+
+      const agotado = p.cantidad <= 0 ? `<div class="agotado">NO DISPONIBLE</div>` : '';
+      const oferta = p.descuento && p.descuento > 0
+        ? `<div class="etiqueta-oferta">${p.descuento}% OFF</div>`
+        : '';
+
+      // Precio con descuento si aplica
+      const precioHTML = p.descuento && p.descuento > 0
+        ? `
+          <p>
+            <span style="text-decoration: line-through; color: gray;">S/. ${p.precio.toFixed(2)}</span><br>
+            <strong style="color: orange;">S/. ${p.precioFinal.toFixed(2)}</strong>
+          </p>
+        `
+        : `<p><strong>S/. ${p.precio.toFixed(2)}</strong></p>`;
 
       const div = document.createElement("div");
       div.className = "producto";
+
       div.innerHTML = `
         ${agotado}
         ${oferta}
         <img src="${p.imagen}" alt="${p.nombre}">
         <h3>${p.nombre}</h3>
         ${precioHTML}
-        <div class="info-adicional">ID: ${doc.id} | Stock: ${p.cantidad}</div>
-        <button onclick="abrirPago()" ${p.cantidad <= 0 ? 'disabled' : ''}>Comprar</button>
-        <button onclick="abrirDetalle('${p.nombre}', '${p.descripcion}')">Detalles</button>
+        <p style="font-size:14px; color:#666;">Stock: ${p.cantidad}</p>
+        <p style="font-size:12px; color:#999;">ID: ${doc.id}</p>
+        <div class="botones">
+          <button onclick="abrirPago()" ${p.cantidad <= 0 ? 'disabled' : ''}>Comprar</button>
+          <button onclick="abrirDetalle('${p.nombre}', '${p.descripcion}')">Ver Detalle</button>
+        </div>
       `;
+
       contenedor.appendChild(div);
     });
   } catch (error) {
-    console.error("Error al obtener productos:", error);
-    contenedor.innerHTML = "<p>Error al cargar productos. Revisa tu conexión o configuración de Firebase.</p>";
+    console.error("❌ Error al cargar productos:", error);
+    contenedor.innerHTML = `<p style="color:red;">Error al cargar productos. Revisa tu conexión o configuración de Firebase.</p>`;
   }
 }
 
