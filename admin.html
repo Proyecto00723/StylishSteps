@@ -20,18 +20,11 @@
       box-shadow: 2px 0 10px rgba(0,0,0,0.6);
     }
 
-    .sidebar h2 {
-      margin-top: 0;
-      font-size: 20px;
-    }
+    .sidebar h2 { margin-top: 0; font-size: 20px; }
 
     .sidebar input, .sidebar textarea, .sidebar button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      box-sizing: border-box;
+      width: 100%; margin: 10px 0; padding: 10px;
+      border: none; border-radius: 5px; box-sizing: border-box;
     }
 
     .sidebar button {
@@ -41,332 +34,139 @@
       cursor: pointer;
     }
 
-    .main {
-      flex: 1;
-      padding: 20px;
-    }
-
+    .main { flex: 1; padding: 20px; }
     .producto {
-      background: #333;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      display: flex;
-      gap: 58px;
-      align-items: center;
-      position: relative;
+      background: #333; padding: 15px; margin-bottom: 10px;
+      border-radius: 5px; display: flex; gap: 58px; align-items: center; position: relative;
     }
 
     .producto img {
-      width: 190px;
-      height: 170px;
-      object-fit: cover;
-      border-radius: 5px;
+      width: 190px; height: 170px; object-fit: cover; border-radius: 5px;
     }
 
-    .producto-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .producto-content h3 {
-      margin: 0;
-    }
-
-    .producto-content p {
-      margin: 5px 0;
-    }
-
-    .logo-tienda {
-      height: 35px;
-      width: auto;
-      object-fit: contain;
-    }
+    .producto-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .producto-content h3 { margin: 0; }
+    .producto-content p { margin: 5px 0; }
 
     .header-tienda {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1rem;
-      color: rgb(255, 3, 3);
-      background-color: #ffffff4b;
-      padding: 5px 15px;
-      border-radius: 5px;
-      font-weight: bold;
+      position: absolute; top: 10px; right: 10px; display: flex; align-items: center;
+      gap: 8px; font-size: 1rem; color: rgb(255, 3, 3); background-color: #ffffff4b;
+      padding: 5px 15px; border-radius: 5px; font-weight: bold;
     }
 
-    .header-tienda span {
-      font-size: 20px;
-    }
-
-    #buscador {
-      margin-bottom: 20px;
-    }
-
-    .producto-content .vender-btn {
-      background-color: #007bff;
-      margin-top: 15px;
-      align-self: center;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-    }
-
-    .producto-content .vender-btn:disabled {
-      background-color: gray;
-      cursor: not-allowed;
-    }
-
+    .logo-tienda { height: 35px; width: auto; object-fit: contain; }
     .etiqueta-oferta {
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: orange;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-top-left-radius: 5px;
-      border-bottom-right-radius: 5px;
+      position: absolute; top: 0; left: 0; background-color: orange; color: white;
+      font-size: 12px; font-weight: bold; padding: 4px 8px;
+      border-top-left-radius: 5px; border-bottom-right-radius: 5px;
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <h2>Agregar Producto</h2>
     <input type="text" id="nombre" placeholder="Nombre del producto" />
     <div style="display: flex; align-items: center; gap: 15px;">
       <input type="text" id="imagen" placeholder="URL de imagen" style="flex: 1;" />
-      <label for="fileInput" style="cursor: pointer; font-size: 35px;">📁</label>
-      <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="subirImagenLocal(event)" />
     </div>
     <textarea id="descripcion" placeholder="Descripción"></textarea>
     <input type="number" id="precio" placeholder="Precio (S/.)" />
     <input type="number" id="cantidad" placeholder="Cantidad disponible" />
     <input type="number" id="descuento" placeholder="Descuento (%)" min="0" max="100" />
-    <button onclick="agregarProducto()">Registrar Producto</button>
+    <button id="btnAgregar">Registrar Producto</button>
     <button onclick="location.href='index.html'">🌐 Ver Tienda</button>
   </div>
 
   <div class="main">
     <h2>Productos Registrados</h2>
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-      <div style="position: relative; display: inline-block;">
-        <input type="text" id="buscador" placeholder="🔍 Buscar por nombre o ID" 
-          oninput="filtrarProductos(); toggleClearBtn()" 
-          style="padding: 10px 35px 10px 15px; border-radius: 15px; border: none; width: 250px; background-color: white; color: black;" />
-        <span id="clearBtn" onclick="limpiarBuscador()" 
-          style="position: absolute; right: 15px; top: 30%; transform: translateY(-50%); cursor: pointer; color: #888; font-weight: bold; display: none;">❌</span>
-      </div>
-    </div>
-
-    <div class="header-tienda">
-      <img src="descarga.png" alt="STEPPAIR" class="logo-tienda" />
-      <h2>Stylish Steps</h2>
-    </div>
-
     <div id="listaProductos"></div>
   </div>
 
-<script>
-  function getProductos() {
-    return JSON.parse(localStorage.getItem('productos')) || [];
-  }
+  <!-- 🔥 FIREBASE + FIRESTORE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  function saveProductos(productos) {
-    localStorage.setItem('productos', JSON.stringify(productos));
-  }
-
-  function generarID() {
-    return Date.now().toString().slice(-6);
-  }
-
-  function agregarProducto() {
-    const nombre = document.getElementById('nombre').value.trim();
-    const imagen = document.getElementById('imagen').value.trim();
-    const descripcion = document.getElementById('descripcion').value.trim();
-    const precio = parseFloat(document.getElementById('precio').value);
-    const cantidad = parseInt(document.getElementById('cantidad').value);
-    const descuento = parseFloat(document.getElementById('descuento').value) || 0;
-
-    if (!nombre || !imagen || !descripcion || !precio || !cantidad) {
-      alert('❗Completa todos los campos.');
-      return;
-    }
-
-    const precioFinal = parseFloat((precio - (precio * (descuento / 100))).toFixed(2));
-
-    const productos = getProductos();
-    const nuevo = {
-      id: generarID(),
-      nombre,
-      imagen,
-      descripcion,
-      precio,
-      cantidad,
-      stockMaximo: cantidad,
-      descuento,
-      precioFinal
+    // ⚙️ CONFIGURA TU FIREBASE AQUÍ
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
     };
 
-    productos.push(nuevo);
-    saveProductos(productos);
-    mostrarProductos();
-    alert('✅ Producto agregado correctamente');
-    ['nombre','imagen','descripcion','precio','cantidad','descuento'].forEach(id => document.getElementById(id).value = '');
-  }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  function mostrarProductos() {
-    const contenedor = document.getElementById('listaProductos');
-    const productos = getProductos();
-    contenedor.innerHTML = '';
-    productos.forEach(p => {
-      const div = document.createElement('div');
-      div.className = 'producto';
-      div.innerHTML = `
-        ${p.descuento > 0 ? `<div class="etiqueta-oferta">En oferta</div>` : ''}
-        <button onclick="eliminarProducto('${p.id}')" style="position: absolute; right: 10px; top: 10px;">🗑</button>
-        <img src="${p.imagen}" alt="${p.nombre}" />
-        <div class="producto-content">
-          <h3>${p.nombre}</h3>
-          <p>${p.descripcion}</p>
-          <p><strong>Precio:</strong> <span style="text-decoration: ${p.descuento > 0 ? 'line-through' : 'none'};">${p.precio} $</span>
-          ${p.descuento > 0 ? `<br><strong style="color: orange;">Ahora: ${p.precioFinal} $</strong>` : ''}</p>
-          <p><strong>Stock:</strong> ${p.cantidad}</p>
-          <p style="font-size: 12px; color: #aaa;">ID: ${p.id}</p>
-          <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="vender-btn" onclick="venderProducto('${p.id}')" ${p.cantidad === 0 ? 'disabled' : ''}>Vender</button>
-            <button class="vender-btn" style="background-color: orange;" onclick="rembolsarProducto('${p.id}')" ${p.cantidad >= p.stockMaximo ? 'disabled' : ''}>Reembolsar</button>
-          </div>
-        </div>
-      `;
-      contenedor.appendChild(div);
-    });
-  }
+    const lista = document.getElementById("listaProductos");
+    const btnAgregar = document.getElementById("btnAgregar");
 
-  function eliminarProducto(id) {
-    const productos = getProductos();
-    const producto = productos.find(p => p.id === id);
-    if (!producto) return;
+    // 🟢 Función para mostrar productos
+    async function mostrarProductos() {
+      lista.innerHTML = "<p>Cargando productos...</p>";
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      lista.innerHTML = "";
 
-    const confirm1 = confirm('🗑 Eliminar producto');
-    if (!confirm1) return;
-
-    const confirm2 = confirm(`⚠️ ¿Estás seguro de eliminar "${producto.nombre}"?`);
-    if (!confirm2) return;
-
-    const nuevosProductos = productos.filter(p => p.id !== id);
-    saveProductos(nuevosProductos);
-    mostrarProductos();
-    alert('✅ Producto eliminado.');
-  }
-
-  function venderProducto(id) {
-    const productos = getProductos();
-    const producto = productos.find(p => p.id === id);
-
-    if (producto && producto.cantidad > 0) {
-      const confirmar = confirm(`¿Deseas vender 1 unidad de "${producto.nombre}"?`);
-      if (confirmar) {
-        producto.cantidad -= 1;
-        saveProductos(productos);
-        mostrarProductos();
-        alert('✅ Producto vendido.');
-      }
-    } else {
-      alert('⚠️ No hay stock disponible para vender.');
-    }
-  }
-
-  function rembolsarProducto(id) {
-    const productos = getProductos();
-    const producto = productos.find(p => p.id === id);
-
-    if (!producto) return;
-
-    if (producto.cantidad < producto.stockMaximo) {
-      const confirmar = confirm(`¿Deseas reembolsar 1 unidad de "${producto.nombre}"?`);
-      if (confirmar) {
-        producto.cantidad += 1;
-        saveProductos(productos);
-        mostrarProductos();
-        alert('🔁 Producto reembolsado.');
-      }
-    } else {
-      alert(`⚠️ No puedes reembolsar más unidades. El stock ya está en el máximo (${producto.stockMaximo}).`);
-    }
-  }
-
-  function subirImagenLocal(event) {
-    const archivo = event.target.files[0];
-    if (!archivo) return;
-
-    const urlTemporal = URL.createObjectURL(archivo);
-    document.getElementById('imagen').value = urlTemporal;
-  }
-
-  function filtrarProductos() {
-    const filtro = document.getElementById('buscador').value.toLowerCase();
-    const productos = getProductos();
-    const contenedor = document.getElementById('listaProductos');
-    contenedor.innerHTML = '';
-
-    productos
-      .filter(p =>
-        p.nombre.toLowerCase().includes(filtro) ||
-        p.id.toLowerCase().includes(filtro)
-      )
-      .forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'producto';
+      querySnapshot.forEach((docu) => {
+        const p = docu.data();
+        const div = document.createElement("div");
+        div.className = "producto";
         div.innerHTML = `
-          ${p.descuento > 0 ? `<div class="etiqueta-oferta">En oferta</div>` : ''}
-          <button onclick="eliminarProducto('${p.id}')" style="position: absolute; right: 10px; top: 10px;">🗑</button>
+          ${p.descuento > 0 ? `<div class="etiqueta-oferta">En oferta</div>` : ""}
+          <button style="position:absolute;right:10px;top:10px;" onclick="eliminarProducto('${docu.id}')">🗑</button>
           <img src="${p.imagen}" alt="${p.nombre}" />
           <div class="producto-content">
             <h3>${p.nombre}</h3>
             <p>${p.descripcion}</p>
-            <p><strong>Precio:</strong> <span style="text-decoration: ${p.descuento > 0 ? 'line-through' : 'none'};">${p.precio} S/</span>
-            ${p.descuento > 0 ? `<br><strong style="color: orange;">Ahora: ${p.precioFinal} $</strong>` : ''}</p>
+            <p><strong>Precio:</strong> S/ ${p.precio}</p>
+            ${p.descuento > 0 ? `<p><strong style="color:orange;">Descuento: ${p.descuento}%</strong></p>` : ""}
             <p><strong>Stock:</strong> ${p.cantidad}</p>
-            <p style="font-size: 12px; color: #aaa;">ID: ${p.id}</p>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-              <button class="vender-btn" onclick="venderProducto('${p.id}')" ${p.cantidad === 0 ? 'disabled' : ''}>Vender</button>
-              <button class="vender-btn" style="background-color: orange;" onclick="rembolsarProducto('${p.id}')" ${p.cantidad >= p.stockMaximo ? 'disabled' : ''}>Reembolsar</button>
-            </div>
           </div>
         `;
-        contenedor.appendChild(div);
+        lista.appendChild(div);
       });
-  }
+    }
 
-  function toggleClearBtn() {
-    const buscador = document.getElementById('buscador');
-    const clearBtn = document.getElementById('clearBtn');
-    clearBtn.style.display = buscador.value ? 'inline' : 'none';
-  }
+    // 🟡 Agregar producto a Firestore
+    btnAgregar.addEventListener("click", async () => {
+      const nombre = document.getElementById("nombre").value.trim();
+      const imagen = document.getElementById("imagen").value.trim();
+      const descripcion = document.getElementById("descripcion").value.trim();
+      const precio = parseFloat(document.getElementById("precio").value);
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+      const descuento = parseFloat(document.getElementById("descuento").value) || 0;
 
-  function limpiarBuscador() {
-    const buscador = document.getElementById('buscador');
-    buscador.value = '';
-    toggleClearBtn();
+      if (!nombre || !imagen || !descripcion || !precio || !cantidad) {
+        alert("❗Completa todos los campos");
+        return;
+      }
+
+      const precioFinal = parseFloat((precio - (precio * (descuento / 100))).toFixed(2));
+
+      await addDoc(collection(db, "productos"), {
+        nombre, imagen, descripcion, precio, cantidad, descuento, precioFinal, fecha: new Date()
+      });
+
+      alert("✅ Producto agregado correctamente");
+      mostrarProductos();
+
+      // limpiar inputs
+      ["nombre","imagen","descripcion","precio","cantidad","descuento"].forEach(id => document.getElementById(id).value = "");
+    });
+
+    // 🔴 Eliminar producto (con confirmación)
+    window.eliminarProducto = async (id) => {
+      if (confirm("¿Eliminar este producto?")) {
+        await deleteDoc(doc(db, "productos", id));
+        alert("Producto eliminado correctamente");
+        mostrarProductos();
+      }
+    };
+
     mostrarProductos();
-  }
-
-  window.onload = mostrarProductos;
-</script>
-
+  </script>
 </body>
 </html>
-
-
-
-
-
