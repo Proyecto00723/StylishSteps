@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Administración - Stylish Steps</title>
+  <title>Panel de Administración</title>
   <style>
     body {
       display: flex;
@@ -11,7 +11,6 @@
       font-family: Arial, sans-serif;
       background-color: #181818;
       color: white;
-      min-height: 100vh;
     }
 
     .sidebar {
@@ -35,17 +34,11 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .sidebar button:hover {
-      background-color: #218838;
     }
 
     .main {
       flex: 1;
       padding: 20px;
-      position: relative;
     }
 
     .producto {
@@ -54,14 +47,9 @@
       margin-bottom: 10px;
       border-radius: 5px;
       display: flex;
-      gap: 20px;
+      gap: 40px;
       align-items: center;
       position: relative;
-      transition: transform 0.2s;
-    }
-
-    .producto:hover {
-      transform: scale(1.02);
     }
 
     .producto img {
@@ -82,6 +70,31 @@
       padding: 4px 8px;
       border-top-left-radius: 5px;
       border-bottom-right-radius: 5px;
+    }
+
+    .producto button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .vender-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .reembolsar-btn {
+      background-color: orange;
+      color: white;
+    }
+
+    .vender-btn:disabled,
+    .reembolsar-btn:disabled {
+      background-color: gray;
+      cursor: not-allowed;
     }
 
     .header-tienda {
@@ -131,84 +144,98 @@
     <h2>Stylish Steps</h2>
   </div>
 
-  <!-- 🔹 Script principal -->
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { collection, addDoc, getDocs, updateDoc, doc } 
+      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const form = document.getElementById("formProducto");
     const lista = document.getElementById("listaProductos");
 
-    // 🔹 Mostrar productos existentes en Firestore
+    // 🟩 Mostrar productos
     async function mostrarProductos() {
-      lista.innerHTML = "<p>Cargando productos...</p>";
+      lista.innerHTML = "Cargando productos...";
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      lista.innerHTML = "";
+      querySnapshot.forEach((documento) => {
+        const p = documento.data();
+        const id = documento.id;
 
-      try {
-        const querySnapshot = await getDocs(collection(db, "productos"));
-        lista.innerHTML = "";
-
-        if (querySnapshot.empty) {
-          lista.innerHTML = "<p>No hay productos registrados aún.</p>";
-          return;
-        }
-
-        querySnapshot.forEach((doc) => {
-          const p = doc.data();
-          const div = document.createElement("div");
-          div.className = "producto";
-          div.innerHTML = `
-            ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
-            <img src="${p.imagen}" alt="${p.nombre}" />
-            <div>
-              <h3>${p.nombre}</h3>
-              <p>${p.descripcion}</p>
-              <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-              <p><strong>Cantidad:</strong> ${p.cantidad}</p>
-              ${
-                p.descuento > 0
-                  ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>`
-                  : ""
-              }
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.innerHTML = `
+          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+          <img src="${p.imagen}" alt="${p.nombre}" />
+          <div>
+            <h3>${p.nombre}</h3>
+            <p>${p.descripcion}</p>
+            <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
+            <p><strong>Stock:</strong> ${p.cantidad}</p>
+            ${p.descuento > 0 ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
+            <div style="display:flex; gap:10px; margin-top:10px;">
+              <button class="vender-btn" ${p.cantidad <= 0 ? 'disabled' : ''} onclick="venderProducto('${id}', ${p.cantidad})">Vender</button>
+              <button class="reembolsar-btn" onclick="reembolsarProducto('${id}', ${p.cantidad})">Reembolsar</button>
             </div>
-          `;
-          lista.appendChild(div);
-        });
-      } catch (error) {
-        console.error("Error al cargar productos:", error);
-        lista.innerHTML = "<p style='color:red;'>❌ Error al cargar productos.</p>";
-      }
+          </div>
+        `;
+        lista.appendChild(div);
+      });
     }
 
-    // 🔹 Agregar producto nuevo a Firestore
+    // 🟦 Agregar producto
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const data = {
-        nombre: form.nombre.value.trim(),
-        descripcion: form.descripcion.value.trim(),
+        nombre: form.nombre.value,
+        descripcion: form.descripcion.value,
         precio: parseFloat(form.precio.value),
         cantidad: parseInt(form.cantidad.value),
         descuento: parseFloat(form.descuento.value) || 0,
-        imagen: form.imagen.value.trim(),
+        imagen: form.imagen.value,
       };
-
-      data.precioFinal =
-        data.descuento > 0
-          ? data.precio - (data.precio * data.descuento) / 100
-          : data.precio;
+      data.precioFinal = data.descuento > 0
+        ? data.precio - (data.precio * data.descuento / 100)
+        : data.precio;
 
       try {
         await addDoc(collection(db, "productos"), data);
-        alert("✅ Producto guardado correctamente en Firestore");
+        alert("✅ Producto guardado en Firestore");
         form.reset();
         mostrarProductos();
       } catch (error) {
-        console.error("Error al guardar:", error);
         alert("❌ Error al guardar: " + error.message);
       }
     });
 
-    // Ejecutar al cargar la página
+    // 🟥 Vender producto
+    window.venderProducto = async (id, cantidad) => {
+      if (cantidad <= 0) return alert("⚠️ No hay stock disponible.");
+      const confirmar = confirm("¿Deseas vender 1 unidad?");
+      if (!confirmar) return;
+      try {
+        const ref = doc(db, "productos", id);
+        await updateDoc(ref, { cantidad: cantidad - 1 });
+        alert("✅ Venta registrada");
+        mostrarProductos();
+      } catch (error) {
+        alert("❌ Error al vender: " + error.message);
+      }
+    };
+
+    // 🟧 Reembolsar producto
+    window.reembolsarProducto = async (id, cantidad) => {
+      const confirmar = confirm("¿Deseas reembolsar 1 unidad?");
+      if (!confirmar) return;
+      try {
+        const ref = doc(db, "productos", id);
+        await updateDoc(ref, { cantidad: cantidad + 1 });
+        alert("🔁 Producto reembolsado");
+        mostrarProductos();
+      } catch (error) {
+        alert("❌ Error al reembolsar: " + error.message);
+      }
+    };
+
     mostrarProductos();
   </script>
 </body>
