@@ -3,16 +3,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDSpeFHjt5Mqytow2Ct_yYJ-4YiRL4ydPo",
-  authDomain: "mi-tienda-7a97a.firebaseapp.com",
-  projectId: "mi-tienda-7a97a",
-  storageBucket: "mi-tienda-7a97a.firebasestorage.app",
-  messagingSenderId: "380330280917",
-  appId: "1:380330280917:web:c0d248b5bde09997fa9f5c"
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
 };
 
-// 🔹 Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-export { db };
+export const db = getFirestore(app);
