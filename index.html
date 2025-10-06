@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Usuario27</title>
+  <title>Stylish Steps</title>
   <style>
     body {
       margin: 0;
@@ -21,9 +21,7 @@
       overflow: hidden;
     }
 
-    header img {
-      width: 100px;
-    }
+    header img { width: 100px; }
 
     .fondo-header {
       background: url('imagen.png') no-repeat center center/cover;
@@ -47,15 +45,8 @@
       padding: 90px 15px;
     }
 
-    .contenido-header h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    .contenido-header p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
+    .contenido-header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .contenido-header p { font-size: 1.2em; margin-bottom: 20px; }
 
     .contenido-header button {
       padding: 10px 20px;
@@ -74,10 +65,7 @@
       text-align: center;
     }
 
-    .productos h2 {
-      font-size: 2em;
-      margin-bottom: 30px;
-    }
+    .productos h2 { font-size: 2em; margin-bottom: 30px; }
 
     .productos-grid {
       display: flex;
@@ -104,14 +92,8 @@
       object-fit: cover;
     }
 
-    .producto h3 {
-      margin: 10px 0 5px;
-    }
-
-    .producto p {
-      font-weight: bold;
-      color: #53b62c;
-    }
+    .producto h3 { margin: 10px 0 5px; }
+    .producto p { font-weight: bold; color: #53b62c; }
 
     .producto button {
       margin: 5px 5px;
@@ -126,36 +108,6 @@
     .producto button:disabled {
       background-color: gray;
       cursor: not-allowed;
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    #metodoPago {
-      background: white;
-      max-width: 400px;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      color: rgb(0, 0, 0);
-    }
-
-    .cerrar {
-      float: right;
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .qr {
-      width: 200px;
-      margin: 10px 0;
     }
 
     .agotado {
@@ -192,7 +144,6 @@
       text-align: center;
       padding: 1rem;
     }
-    
   </style>
 </head>
 <body>
@@ -210,43 +161,69 @@
 
 <section class="productos" id="productos">
   <h2>Nuestras Nuevas Colecciones</h2>
-  <p>¡Encuentra el match ideal para tus pies.!</p><br>
-
-  <div class="productos-grid" id="vistaProductos">
-    <!-- Se insertan aquí dinámicamente desde Firebase -->
-  </div>
+  <p>¡Encuentra el match ideal para tus pies!</p><br>
+  <div class="productos-grid" id="vistaProductos">Cargando productos...</div>
 </section>
 
-<!-- Modal de pago -->
-<div class="overlay" id="modalOverlay">
-  <div id="metodoPago">
-    <span class="cerrar" onclick="cerrarPago()">×</span>
-    <h3>Métodos de Pago</h3>
-    <p><strong>Yape / Plin:</strong> 912345678</p>
-    <img class="qr" src="qr.jpeg" alt="QR de pago" />
-    <p><strong style="color:rgba(0, 0, 0, 0.432);"> PayPal: No Disponible  </strong> </p>
-    <p><strong>Ubicación del producto:</strong> Paiján</p>
-    <p><strong  style="color:rgb(0, 0, 0);">Confirmación por WhatsApp:</strong></p>
-    <a href="https://wa.me/925944615" target="_blank"  style="color:rgb(73, 70, 255)">Contactar al encargado</a>
-    <br /><br />
-    <strong style="color:green">✅ ¡Pago Seguro!</strong>
-  </div>
-</div>
-
-<div class="overlay" id="modalDetalle">
-  <div id="detalleProducto" style="background:white; max-width: 400px; margin: 10% auto; padding: 20px; border-radius: 8px; color: black; position: relative; text-align: left;">
-    <span class="cerrar" onclick="cerrarDetalle()" style="position:absolute; top:10px; right:15px;">×</span>
-    <h3 id="detalleTitulo"></h3>
-    <p id="detalleDescripcion"></p>
-  </div>
-</div>
-
 <footer>
-  &copy; 2025 StepPair | match ideal para tus pies!
+  &copy; 2025 StepPair | ¡Match ideal para tus pies!
 </footer>
 
-<!-- Scripts externos -->
-<script type="module" src="app.js"></script>
+<script type="module">
+  import { db } from "./firebase-config.js";
+  import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
+  const vistaProductos = document.getElementById("vistaProductos");
+
+  async function cargarProductos() {
+    try {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      vistaProductos.innerHTML = "";
+      querySnapshot.forEach((docSnap) => {
+        const p = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.innerHTML = `
+          ${p.cantidad <= 0 ? '<div class="agotado">AGOTADO</div>' : ''}
+          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+          <img src="${p.imagen}" alt="${p.nombre}" />
+          <h3>${p.nombre}</h3>
+          <p>Precio: S/. ${p.precioFinal.toFixed(2)}</p>
+          <p>Stock: ${p.cantidad}</p>
+          <button onclick="venderProducto('${docSnap.id}', ${p.cantidad})" ${p.cantidad <= 0 ? 'disabled' : ''}>Vender</button>
+          <button onclick="reembolsarProducto('${docSnap.id}', ${p.cantidad}, ${p.stockInicial || p.cantidad})">Reembolsar</button>
+        `;
+        vistaProductos.appendChild(div);
+      });
+    } catch (error) {
+      vistaProductos.innerHTML = "Error al cargar productos. Revisa tu conexión o configuración de Firebase.";
+      console.error(error);
+    }
+  }
+
+  // Vender producto
+  window.venderProducto = async (id, cantidad) => {
+    if (cantidad <= 0) {
+      alert("❌ No hay stock disponible.");
+      return;
+    }
+    const ref = doc(db, "productos", id);
+    await updateDoc(ref, { cantidad: cantidad - 1 });
+    cargarProductos();
+  };
+
+  // Reembolsar producto
+  window.reembolsarProducto = async (id, cantidad, stockInicial) => {
+    if (cantidad >= stockInicial) {
+      alert("⚠️ No puedes reembolsar más de lo registrado inicialmente.");
+      return;
+    }
+    const ref = doc(db, "productos", id);
+    await updateDoc(ref, { cantidad: cantidad + 1 });
+    cargarProductos();
+  };
+
+  cargarProductos();
+</script>
 </body>
 </html>
