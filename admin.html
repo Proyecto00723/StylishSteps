@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Administración | Stylish Steps</title>
+  <title>Panel de Administración</title>
   <style>
     body {
       display: flex;
@@ -11,7 +11,6 @@
       font-family: Arial, sans-serif;
       background-color: #181818;
       color: white;
-      min-height: 100vh;
     }
 
     .sidebar {
@@ -19,25 +18,15 @@
       background: #111;
       padding: 20px;
       box-shadow: 2px 0 10px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
     }
-
-    .sidebar h2 { margin-top: 0; font-size: 20px; }
 
     .sidebar input, .sidebar textarea, .sidebar button {
       width: 100%;
-      margin: 8px 0;
+      margin: 10px 0;
       padding: 10px;
       border: none;
       border-radius: 5px;
       box-sizing: border-box;
-      font-size: 0.95rem;
-    }
-
-    .sidebar textarea {
-      resize: none;
-      height: 60px;
     }
 
     .sidebar button {
@@ -45,17 +34,11 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .sidebar button:hover {
-      background-color: #218838;
     }
 
     .main {
       flex: 1;
       padding: 20px;
-      overflow-y: auto;
     }
 
     .producto {
@@ -67,29 +50,14 @@
       gap: 20px;
       align-items: center;
       position: relative;
-      transition: transform 0.2s;
-    }
-
-    .producto:hover {
-      transform: scale(1.01);
     }
 
     .producto img {
-      width: 150px;
-      height: 140px;
+      width: 140px;
+      height: 120px;
       object-fit: cover;
       border-radius: 5px;
     }
-
-    .producto-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .producto-content h3 { margin: 0; font-size: 1.2rem; }
-    .producto-content p { margin: 4px 0; font-size: 0.95rem; }
 
     .etiqueta-oferta {
       position: absolute;
@@ -104,126 +72,106 @@
       border-bottom-right-radius: 5px;
     }
 
-    .btn-eliminar {
+    .header-tienda {
       position: absolute;
-      right: 10px;
       top: 10px;
-      border: none;
-      background: transparent;
-      font-size: 1.1rem;
-      cursor: pointer;
-      color: red;
-      transition: transform 0.2s;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      color: rgb(255, 3, 3);
+      background-color: #ffffff4b;
+      padding: 5px 15px;
+      border-radius: 5px;
+      font-weight: bold;
     }
 
-    .btn-eliminar:hover {
-      transform: scale(1.2);
+    .logo-tienda {
+      height: 35px;
+      width: auto;
+      object-fit: contain;
     }
   </style>
 </head>
-
 <body>
   <div class="sidebar">
     <h2>Agregar Producto</h2>
-    <input type="text" id="nombre" placeholder="Nombre del producto" />
-    <input type="text" id="imagen" placeholder="URL de imagen" />
-    <textarea id="descripcion" placeholder="Descripción"></textarea>
-    <input type="number" id="precio" placeholder="Precio (S/.)" step="0.01" />
-    <input type="number" id="cantidad" placeholder="Cantidad disponible" min="0" />
-    <input type="number" id="descuento" placeholder="Descuento (%)" min="0" max="100" />
-    <button id="btnAgregar">Registrar Producto</button>
-    <button onclick="location.href='index.html'">🌐 Ver Tienda</button>
+    <form id="formProducto">
+      <input type="text" name="nombre" placeholder="Nombre del producto" required />
+      <input type="text" name="imagen" placeholder="URL de imagen" required />
+      <textarea name="descripcion" placeholder="Descripción" required></textarea>
+      <input type="number" name="precio" placeholder="Precio (S/.)" required />
+      <input type="number" name="cantidad" placeholder="Cantidad disponible" required />
+      <input type="number" name="descuento" placeholder="Descuento (%)" min="0" max="100" />
+      <button type="submit">Registrar Producto</button>
+      <button type="button" onclick="location.href='index.html'">🌐 Ver Tienda</button>
+    </form>
   </div>
 
   <div class="main">
-    <h2>Productos Registrados</h2>
-    <div id="listaProductos"></div>
+    <h2>Productos en Firebase</h2>
+    <div id="listaProductos">Cargando productos...</div>
   </div>
 
-  <!-- 🔥 FIREBASE + FIRESTORE -->
+  <div class="header-tienda">
+    <img src="descarga.png" alt="STEPPAIR" class="logo-tienda" />
+    <h2>Stylish Steps</h2>
+  </div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { db } from "./firebase-config.js";
+    import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // ⚙️ CONFIGURA TU FIREBASE AQUÍ
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_DOMINIO.firebaseapp.com",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_BUCKET.appspot.com",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
+    const form = document.getElementById("formProducto");
     const lista = document.getElementById("listaProductos");
-    const btnAgregar = document.getElementById("btnAgregar");
 
-    // 🟢 Mostrar productos existentes
     async function mostrarProductos() {
-      lista.innerHTML = "<p>Cargando productos...</p>";
+      lista.innerHTML = "Cargando productos...";
       const querySnapshot = await getDocs(collection(db, "productos"));
       lista.innerHTML = "";
-
-      querySnapshot.forEach((docu) => {
-        const p = docu.data();
+      querySnapshot.forEach((doc) => {
+        const p = doc.data();
         const div = document.createElement("div");
         div.className = "producto";
         div.innerHTML = `
-          ${p.descuento > 0 ? `<div class='etiqueta-oferta'>${p.descuento}% OFF</div>` : ""}
-          <button class="btn-eliminar" onclick="eliminarProducto('${docu.id}')">🗑</button>
+          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
           <img src="${p.imagen}" alt="${p.nombre}" />
-          <div class="producto-content">
+          <div>
             <h3>${p.nombre}</h3>
             <p>${p.descripcion}</p>
-            <p><strong>Precio:</strong> S/ ${p.precio.toFixed(2)}</p>
-            ${p.descuento > 0 ? `<p><strong style='color:orange;'>Precio Final: S/ ${(p.precioFinal || p.precio - (p.precio * p.descuento / 100)).toFixed(2)}</strong></p>` : ""}
-            <p><strong>Stock:</strong> ${p.cantidad}</p>
+            <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
+            <p><strong>Cantidad:</strong> ${p.cantidad}</p>
+            ${p.descuento > 0 ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
           </div>
         `;
         lista.appendChild(div);
       });
-
-      if (!lista.innerHTML.trim()) lista.innerHTML = "<p>No hay productos registrados aún.</p>";
     }
 
-    // 🟡 Agregar nuevo producto
-    btnAgregar.addEventListener("click", async () => {
-      const nombre = document.getElementById("nombre").value.trim();
-      const imagen = document.getElementById("imagen").value.trim();
-      const descripcion = document.getElementById("descripcion").value.trim();
-      const precio = parseFloat(document.getElementById("precio").value);
-      const cantidad = parseInt(document.getElementById("cantidad").value);
-      const descuento = parseFloat(document.getElementById("descuento").value) || 0;
-
-      if (!nombre || !imagen || !descripcion || !precio || !cantidad) {
-        alert("❗Completa todos los campos obligatorios");
-        return;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        nombre: form.nombre.value,
+        descripcion: form.descripcion.value,
+        precio: parseFloat(form.precio.value),
+        cantidad: parseInt(form.cantidad.value),
+        descuento: parseFloat(form.descuento.value) || 0,
+        imagen: form.imagen.value,
+      };
+      data.precioFinal = data.descuento > 0
+        ? data.precio - (data.precio * data.descuento / 100)
+        : data.precio;
+      try {
+        await addDoc(collection(db, "productos"), data);
+        alert("✅ Producto guardado en Firestore");
+        form.reset();
+        mostrarProductos();
+      } catch (error) {
+        alert("❌ Error al guardar: " + error.message);
       }
-
-      const precioFinal = parseFloat((precio - (precio * (descuento / 100))).toFixed(2));
-
-      await addDoc(collection(db, "productos"), {
-        nombre, imagen, descripcion, precio, cantidad, descuento, precioFinal, fecha: new Date()
-      });
-
-      alert("✅ Producto agregado correctamente");
-      mostrarProductos();
-      ["nombre","imagen","descripcion","precio","cantidad","descuento"].forEach(id => document.getElementById(id).value = "");
     });
 
-    // 🔴 Eliminar producto
-    window.eliminarProducto = async (id) => {
-      if (confirm("¿Eliminar este producto?")) {
-        await deleteDoc(doc(db, "productos", id));
-        alert("🗑 Producto eliminado");
-        mostrarProductos();
-      }
-    };
-
-    // Cargar al inicio
     mostrarProductos();
   </script>
 </body>
