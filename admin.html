@@ -47,14 +47,14 @@
       margin-bottom: 10px;
       border-radius: 5px;
       display: flex;
-      gap: 50px;
+      gap: 20px;
       align-items: center;
       position: relative;
     }
 
     .producto img {
-      width: 170px;
-      height: 150px;
+      width: 140px;
+      height: 120px;
       object-fit: cover;
       border-radius: 5px;
     }
@@ -72,29 +72,20 @@
       border-bottom-right-radius: 5px;
     }
 
-    .producto button {
-      margin-top: 10px;
-      padding: 8px 12px;
+    .btn-eliminar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
       border: none;
       border-radius: 5px;
+      padding: 5px 10px;
       cursor: pointer;
-      font-weight: bold;
     }
 
-    .vender-btn {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .reembolsar-btn {
-      background-color: orange;
-      color: white;
-    }
-
-    .vender-btn:disabled,
-    .reembolsar-btn:disabled {
-      background-color: gray;
-      cursor: not-allowed;
+    .btn-eliminar:hover {
+      background: darkred;
     }
 
     .header-tienda {
@@ -146,43 +137,39 @@
 
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { collection, addDoc, getDocs, updateDoc, doc } 
-      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const form = document.getElementById("formProducto");
     const lista = document.getElementById("listaProductos");
 
-    // 🔹 Mostrar productos
+    // 📌 Mostrar productos
     async function mostrarProductos() {
       lista.innerHTML = "Cargando productos...";
       const querySnapshot = await getDocs(collection(db, "productos"));
       lista.innerHTML = "";
-      querySnapshot.forEach((documento) => {
-        const p = documento.data();
-        const id = documento.id;
-
+      querySnapshot.forEach((docSnap) => {
+        const p = docSnap.data();
+        const id = docSnap.id;
         const div = document.createElement("div");
         div.className = "producto";
         div.innerHTML = `
           ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+          <button class="btn-eliminar" onclick="eliminarProducto('${id}')">🗑</button>
           <img src="${p.imagen}" alt="${p.nombre}" />
           <div>
             <h3>${p.nombre}</h3>
             <p>${p.descripcion}</p>
             <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-            <p><strong>Stock:</strong> ${p.cantidad}</p>
+            <p><strong>Stock actual:</strong> ${p.cantidad}</p>
+            <p><strong>Stock máximo:</strong> ${p.stockMaximo || p.cantidad}</p>
             ${p.descuento > 0 ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
-            <div style="display:flex; gap:10px; margin-top:10px;">
-              <button class="vender-btn" ${p.cantidad <= 0 ? 'disabled' : ''} onclick="venderProducto('${id}', ${p.cantidad})">Vender</button>
-              <button class="reembolsar-btn" ${p.cantidad >= p.stockMaximo ? 'disabled' : ''} onclick="reembolsarProducto('${id}', ${p.cantidad}, ${p.stockMaximo})">Reembolsar</button>
-            </div>
           </div>
         `;
         lista.appendChild(div);
       });
     }
 
-    // 🔸 Registrar producto
+    // 📌 Registrar producto
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const data = {
@@ -194,12 +181,11 @@
         imagen: form.imagen.value,
       };
 
+      // ✅ Guardar el stock máximo para controlar reembolsos
+      data.stockMaximo = data.cantidad;
       data.precioFinal = data.descuento > 0
         ? data.precio - (data.precio * data.descuento / 100)
         : data.precio;
-
-      // 🔹 Guardamos también el stock máximo inicial
-      data.stockMaximo = data.cantidad;
 
       try {
         await addDoc(collection(db, "productos"), data);
@@ -211,36 +197,13 @@
       }
     });
 
-    // 🟥 Vender producto
-    window.venderProducto = async (id, cantidad) => {
-      if (cantidad <= 0) return alert("⚠️ No hay stock disponible.");
-      const confirmar = confirm("¿Deseas vender 1 unidad?");
+    // 📌 Eliminar producto
+    window.eliminarProducto = async function(id) {
+      const confirmar = confirm("⚠️ ¿Eliminar este producto?");
       if (!confirmar) return;
-      try {
-        const ref = doc(db, "productos", id);
-        await updateDoc(ref, { cantidad: cantidad - 1 });
-        alert("✅ Venta registrada");
-        mostrarProductos();
-      } catch (error) {
-        alert("❌ Error al vender: " + error.message);
-      }
-    };
-
-    // 🟧 Reembolsar producto (limitado por stockMaximo)
-    window.reembolsarProducto = async (id, cantidad, stockMaximo) => {
-      if (cantidad >= stockMaximo)
-        return alert(`⚠️ No puedes reembolsar más unidades. El stock ya está en el máximo (${stockMaximo}).`);
-      
-      const confirmar = confirm("¿Deseas reembolsar 1 unidad?");
-      if (!confirmar) return;
-      try {
-        const ref = doc(db, "productos", id);
-        await updateDoc(ref, { cantidad: cantidad + 1 });
-        alert("🔁 Producto reembolsado");
-        mostrarProductos();
-      } catch (error) {
-        alert("❌ Error al reembolsar: " + error.message);
-      }
+      await deleteDoc(doc(db, "productos", id));
+      alert("🗑 Producto eliminado");
+      mostrarProductos();
     };
 
     mostrarProductos();
