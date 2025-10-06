@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Administración</title>
+  <title>Panel de Administración - Stylish Steps</title>
   <style>
     body {
       display: flex;
@@ -11,6 +11,7 @@
       font-family: Arial, sans-serif;
       background-color: #181818;
       color: white;
+      min-height: 100vh;
     }
 
     .sidebar {
@@ -34,11 +35,17 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .sidebar button:hover {
+      background-color: #218838;
     }
 
     .main {
       flex: 1;
       padding: 20px;
+      position: relative;
     }
 
     .producto {
@@ -50,6 +57,11 @@
       gap: 20px;
       align-items: center;
       position: relative;
+      transition: transform 0.2s;
+    }
+
+    .producto:hover {
+      transform: scale(1.02);
     }
 
     .producto img {
@@ -119,6 +131,7 @@
     <h2>Stylish Steps</h2>
   </div>
 
+  <!-- 🔹 Script principal -->
   <script type="module">
     import { db } from "./firebase-config.js";
     import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -126,53 +139,27 @@
     const form = document.getElementById("formProducto");
     const lista = document.getElementById("listaProductos");
 
+    // 🔹 Mostrar productos existentes en Firestore
     async function mostrarProductos() {
-      lista.innerHTML = "Cargando productos...";
-      const querySnapshot = await getDocs(collection(db, "productos"));
-      lista.innerHTML = "";
-      querySnapshot.forEach((doc) => {
-        const p = doc.data();
-        const div = document.createElement("div");
-        div.className = "producto";
-        div.innerHTML = `
-          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
-          <img src="${p.imagen}" alt="${p.nombre}" />
-          <div>
-            <h3>${p.nombre}</h3>
-            <p>${p.descripcion}</p>
-            <p><strong>Precio:</strong> S/. ${p.precio.toFixed(2)}</p>
-            <p><strong>Cantidad:</strong> ${p.cantidad}</p>
-            ${p.descuento > 0 ? `<p style="color:orange"><strong>Precio final:</strong> S/. ${p.precioFinal.toFixed(2)}</p>` : ""}
-          </div>
-        `;
-        lista.appendChild(div);
-      });
-    }
+      lista.innerHTML = "<p>Cargando productos...</p>";
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = {
-        nombre: form.nombre.value,
-        descripcion: form.descripcion.value,
-        precio: parseFloat(form.precio.value),
-        cantidad: parseInt(form.cantidad.value),
-        descuento: parseFloat(form.descuento.value) || 0,
-        imagen: form.imagen.value,
-      };
-      data.precioFinal = data.descuento > 0
-        ? data.precio - (data.precio * data.descuento / 100)
-        : data.precio;
       try {
-        await addDoc(collection(db, "productos"), data);
-        alert("✅ Producto guardado en Firestore");
-        form.reset();
-        mostrarProductos();
-      } catch (error) {
-        alert("❌ Error al guardar: " + error.message);
-      }
-    });
+        const querySnapshot = await getDocs(collection(db, "productos"));
+        lista.innerHTML = "";
 
-    mostrarProductos();
-  </script>
-</body>
-</html>
+        if (querySnapshot.empty) {
+          lista.innerHTML = "<p>No hay productos registrados aún.</p>";
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const p = doc.data();
+          const div = document.createElement("div");
+          div.className = "producto";
+          div.innerHTML = `
+            ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
+            <img src="${p.imagen}" alt="${p.nombre}" />
+            <div>
+              <h3>${p.nombre}</h3>
+              <p>${p.descripcion}</p>
+              <p><strong>Pr
