@@ -74,10 +74,11 @@
       gap: 30px;
     }
 
+    /* Estilos del producto */
     .producto {
       background: white;
       color: black;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 15px;
       width: 280px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
@@ -87,28 +88,38 @@
 
     .producto img {
       max-width: 100%;
-      border-radius: 5px;
+      border-radius: 8px;
       height: 180px;
       object-fit: cover;
     }
 
-    .producto h3 { margin: 10px 0 5px; }
-    .producto p { margin: 5px 0; }
+    .producto h3 {
+      margin: 10px 0 8px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
 
     .precio-original {
       text-decoration: line-through;
-      color: #888;
+      color: #777;
       font-size: 0.9em;
     }
 
     .precio-descuento {
       font-weight: bold;
-      color: #53b62c;
-      font-size: 1.1em;
+      color: orange;
+      font-size: 1.3em;
+      margin-top: 5px;
+    }
+
+    .info-idstock {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #444;
     }
 
     .producto button {
-      margin: 5px 5px;
+      margin: 5px;
       background-color: #dd1d1d;
       color: #fff;
       border: none;
@@ -182,9 +193,10 @@
 </section>
 
 <footer>
-  &copy; 2025 StepPair | ¡Match ideal para tus pies!
+  &copy; 2025 Stylish Steps | Match ideal para tus pies
 </footer>
 
+<!-- Script principal -->
 <script type="module">
   import { db } from "./firebase-config.js";
   import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -195,42 +207,39 @@
     try {
       const querySnapshot = await getDocs(collection(db, "productos"));
       vistaProductos.innerHTML = "";
-      let contador = 1; // contador para ID numérico
 
-      querySnapshot.forEach((docSnap) => {
+      querySnapshot.forEach((docSnap, index) => {
         const p = docSnap.data();
+        const precioFinal = p.descuento > 0
+          ? (p.precio - (p.precio * p.descuento / 100))
+          : p.precio;
+
         const div = document.createElement("div");
         div.className = "producto";
 
-        const precioFinal = p.descuento > 0 ? (p.precio * (1 - p.descuento / 100)) : p.precio;
-
         div.innerHTML = `
           ${p.cantidad <= 0 ? '<div class="agotado">AGOTADO</div>' : ''}
-          ${p.descuento > 0 ? '<div class="etiqueta-oferta">En oferta</div>' : ''}
-
+          ${p.descuento > 0 ? `<div class="etiqueta-oferta">${p.descuento}% OFF</div>` : ''}
           <img src="${p.imagen}" alt="${p.nombre}" />
           <h3>${p.nombre}</h3>
-          <p><strong>ID:</strong> ${contador}</p>
-          <p><strong>Stock:</strong> ${p.cantidad}</p>
           ${p.descuento > 0 
             ? `<p class="precio-original">S/. ${p.precio.toFixed(2)}</p>
-               <p class="precio-descuento">S/. ${precioFinal.toFixed(2)} (Descuento ${p.descuento}%)</p>`
-            : `<p class="precio-descuento">S/. ${p.precio.toFixed(2)}</p>`}
-          
+               <p class="precio-descuento">S/. ${precioFinal.toFixed(2)}</p>`
+            : `<p class="precio-descuento">S/. ${precioFinal.toFixed(2)}</p>`}
+          <p class="info-idstock">ID: ${index + 1} | Stock: ${p.cantidad}</p>
           <button onclick="comprarProducto('${docSnap.id}')" ${p.cantidad <= 0 ? 'disabled' : ''}>Comprar</button>
           <button class="ver-detalle" onclick="verDetalle('${docSnap.id}')">Ver detalle</button>
         `;
         vistaProductos.appendChild(div);
-        contador++; // incrementa el ID numérico
       });
     } catch (error) {
-      vistaProductos.innerHTML = "Error al cargar productos.";
       console.error(error);
+      vistaProductos.innerHTML = "⚠️ Error al cargar productos. Revisa tu conexión o configuración de Firebase.";
     }
   }
 
   window.comprarProducto = (id) => {
-    alert(`🛒 Producto ${id} agregado al carrito (lógica por implementar).`);
+    alert(`🛒 Producto ${id} agregado al carrito (función pendiente de implementar).`);
   };
 
   window.verDetalle = (id) => {
