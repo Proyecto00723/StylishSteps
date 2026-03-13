@@ -150,6 +150,12 @@
             color: red;
             font-weight: bold;
         }
+        
+        #visorPrincipal img,
+        #visorPrincipal video {
+            width: 100%;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
@@ -158,7 +164,7 @@
     <div class="contenedor">
 
         <div class="galeria">
-            <img id="imgPrincipal">
+            <div id="visorPrincipal"></div>
             <div class="miniaturas" id="miniaturas"></div>
             <div id="videoProducto" style="margin-top:15px;"></div>
         </div>
@@ -221,9 +227,12 @@
         equalTo(idProducto) ); const snap = await get(q); snap.forEach(s=>{ productoActual = s.val(); document.getElementById("nombre").innerText = productoActual.nombre; document.getElementById("descripcion").innerText = productoActual.descripcion; document.getElementById("stock").innerText
         = productoActual.stock || 0; document.getElementById("idProductoMostrar").innerText = productoActual.idProducto; const precioDiv = document.getElementById("precio"); precioDiv.innerHTML = productoActual.descuento > 0 ? `S/ ${productoActual.precioFinal}
         <span>S/ ${productoActual.precio}</span>` : `S/ ${productoActual.precio}`; const estado = document.getElementById("estadoStock"); if(productoActual.stock > 0){ estado.innerText=" (Disponible)"; estado.classList.add("stock-ok"); }else{ estado.innerText="(Agotado)";
-        estado.classList.add("stock-no"); document.getElementById("btnComprar").disabled=true; } const imgPrincipal = document.getElementById("imgPrincipal"); const mini = document.getElementById("miniaturas"); productoActual.imagenes.forEach((img,i)=>{
-        if(i==0) imgPrincipal.src=img; const im=document.createElement("img"); im.src=img; im.onclick=()=>{ imgPrincipal.src=img; }; mini.appendChild(im); }); if(productoActual.video){ const contenedorVideo = document.getElementById("videoProducto");
-        contenedorVideo.innerHTML = `
+        estado.classList.add("stock-no"); document.getElementById("btnComprar").disabled=true; } const visor = document.getElementById("visorPrincipal"); const mini = document.getElementById("miniaturas"); productoActual.imagenes.forEach((img,i)=>{ if(i==0){
+        visor.innerHTML = `<img src="${img}">`; } const im = document.createElement("img"); im.src = img; im.onclick = ()=>{ visor.innerHTML = `<img src="${img}">`; }; mini.appendChild(im); }); if(productoActual.video){ const miniVideo = document.createElement("img");
+        miniVideo.src = productoActual.imagenes[0]; miniVideo.style.opacity="0.7"; miniVideo.onclick = ()=>{ visor.innerHTML = `
+        <video controls autoplay style="width:100%;border-radius:10px;">
+                <source src="${productoActual.video}" type="video/mp4">
+            </video> `; }; mini.appendChild(miniVideo); }; if(productoActual.video){ const contenedorVideo = document.getElementById("videoProducto"); contenedorVideo.innerHTML = `
         <video controls style="width:100%;border-radius:10px;">
             <source src="${productoActual.video}" type="video/mp4">
         </video> `; }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{ if(!t.activo)
