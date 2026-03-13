@@ -232,10 +232,7 @@
         miniVideo.src = productoActual.imagenes[0]; miniVideo.style.opacity="0.7"; miniVideo.onclick = ()=>{ visor.innerHTML = `
         <video controls autoplay style="width:100%;border-radius:10px;">
                 <source src="${productoActual.video}" type="video/mp4">
-            </video> `; }; mini.appendChild(miniVideo); }; if(productoActual.video){ const contenedorVideo = document.getElementById("videoProducto"); contenedorVideo.innerHTML = `
-        <video controls style="width:100%;border-radius:10px;">
-            <source src="${productoActual.video}" type="video/mp4">
-        </video> `; }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{ if(!t.activo)
+            </video> `; }; mini.appendChild(miniVideo); }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{ if(!t.activo)
         return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); const coloresDiv=document.getElementById("colores");
         if(productoActual.colores && productoActual.colores.length>0){ productoActual.colores.forEach(c=>{ const sp=document.createElement("span"); sp.style.background=c.nombre; sp.onclick=()=>{ document.querySelectorAll(".colores span") .forEach(x=>x.classList.remove("activo"));
         sp.classList.add("activo"); colorSeleccionado=c.nombre; validar(); }; coloresDiv.appendChild(sp); }); }else{ coloresDiv.innerHTML= "Sin colores disponibles"; colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar");
