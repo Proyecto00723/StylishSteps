@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Administración</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: white;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: #111;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+        }
+        
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        
+        .sidebar input,
+        .sidebar textarea,
+        .sidebar button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        .sidebar button {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .producto {
+            background: #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            gap: 58px;
+            align-items: center;
+            position: relative;
+        }
+        
+        .producto img {
+            width: 190px;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .producto-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .producto-content h3 {
+            margin: 0;
+        }
+        
+        .producto-content p {
+            margin: 5px 0;
+        }
+        
+        .logo-tienda {
+            height: 35px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .header-tienda {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            color: rgb(255, 3, 3);
+            background-color: #ffffff4b;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .header-tienda span {
+            font-size: 20px;
+        }
+        
+        #buscador {
+            margin-bottom: 20px;
+        }
+        
+        .producto-content .vender-btn {
+            background-color: #007bff;
+            margin-top: 15px;
+            align-self: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .producto-content .vender-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+        
+        .etiqueta-oferta {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: orange;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-top-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .btn-eliminar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #444;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .btn-eliminar:hover {
+            background: red;
+        }
+        
+        .producto {
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Agregar Producto</h2>
+        <input type="text" id="nombre" placeholder="Nombre del producto" />
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <input type="text" id="imagen1" placeholder="URL imagen 1 (.jpg)" />
+            <input type="text" id="imagen2" placeholder="URL imagen 2 (.jpg)" />
+            <input type="text" id="video" placeholder="URL video (.mp4)" />
+
+
+
+            <label for="fileInput" style="cursor: pointer; font-size: 35px;">📁</label>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="subirImagenLocal(event)" />
+        </div>
+        <textarea id="descripcion" placeholder="Descripción"></textarea>
+        <input type="number" id="precio" placeholder="Precio (S/)" />
+        <input type="number" id="cantidad" placeholder="Cantidad disponible" />
+        <input type="number" id="descuento" placeholder="Descuento (%)" min="0" max="100" />
+        <div>
+            <label>Colores (máx 9)</label>
+            <div id="contenedorColores"></div>
+            <input type="text" id="inputColor" placeholder="Ej: 8AE2F2">
+            <button type="button" onclick="agregarColor()">+</button>
+        </div>
+        <div>
+            <label>Tallas (máx 7)</label>
+            <div id="contenedorTallas"></div>
+            <input type="number" id="inputTalla" placeholder="Ej: 37">
+            <button type="button" onclick="agregarTalla()">+</button>
+        </div>
+        <button onclick="agregarProducto()">Registrar Producto</button>
+        <button onclick="location.href='tienda.html'">🌐 Ver Tienda</button>
+    </div>
+
+    <div class="main">
+        <h2>Productos Registrados</h2>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="position: relative; display: inline-block;">
+                <input type="text" id="buscador" placeholder="🔍 Buscar por nombre o ID" oninput="filtrarProductos(); toggleClearBtn()" style="padding: 10px 35px 10px 15px; border-radius: 15px; border: none; width: 250px; background-color: white; color: black;" />
+                <span id="clearBtn" onclick="limpiarBuscador()" style="position: absolute; right: 5px; top: 30%; transform: translateY(-60%); cursor: pointer; color: #888; font-weight: bold; display: none;">❌</span>
+            </div>
+        </div>
+
+        <div class="header-tienda">
+            <img src="descarga.png" alt="STEPPAIR" class="logo-tienda" />
+            <h2>Stylish Steps</h2>
+        </div>
+
+        <div id="listaProductosAdmin"></div>
+    </div>
+
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"; import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; const firebaseConfig = { apiKey:
+        "AIzaSyCCDSrE_hWvYYgjNwTX85leeU3vHBLBJsY", authDomain: "stylishsteps-10fc4.firebaseapp.com", databaseURL: "https://stylishsteps-10fc4-default-rtdb.firebaseio.com", projectId: "stylishsteps-10fc4", storageBucket: "stylishsteps-10fc4.firebasestorage.app",
+        messagingSenderId: "32645603346", appId: "1:32645603346:web:ae022c525a85aaf7ad38cb", measurementId: "G-369VZP753G" }; const app = initializeApp(firebaseConfig); const database = getDatabase(app); window.agregarProducto = function () { const nombre
+        = document.getElementById('nombre').value.trim(); const imagen1 = document.getElementById('imagen1').value.trim(); const imagen2 = document.getElementById('imagen2').value.trim(); const video = document.getElementById('video').value.trim(); const
+        descripcion = document.getElementById('descripcion').value.trim(); const precio = parseFloat(document.getElementById('precio').value); const cantidad = parseInt(document.getElementById('cantidad').value); const descuento = parseFloat(document.getElementById('descuento').value)
+        || 0; if (!nombre || !imagen1 || !descripcion || !precio || !cantidad) { alert('Completa todos los campos.'); return; } const precioFinal = parseFloat((precio - (precio * (descuento / 100))).toFixed(2)); const productosRef = ref(database, "productos");
+        const idProducto = Math.floor(100000 + Math.random() * 900000); push(productosRef, { idProducto, nombre, descripcion, precio, cantidad, descuento, precioFinal, stockMaximo: cantidad, imagenes: [ imagen1, imagen2 ], video: video, colores: colores.map(
+        c => ({ nombre: c, activo: true })), tallas: tallas.map(t => ({ nombre: t, activo: true })) }); colores = []; tallas = []; renderColores(); renderTallas(); alert("✅ Producto guardado correctamente"); }; const productosRef = ref(database, "productos");
+        onValue(productosRef, (snapshot) => { const contenedor = document.getElementById("listaProductosAdmin"); contenedor.innerHTML = ""; snapshot.forEach((childSnapshot) => { const p = childSnapshot.val(); const key = childSnapshot.key; const tallasAdmin
+        = p.tallas ? p.tallas.map((t, index) => `
+        <span onclick="toggleTalla('${key}', ${index})" style="
+                        padding:5px 10px;
+                        margin:4px;
+                        border-radius:5px;
+                        display:inline-block;
+                        cursor:pointer;
+                        background:${t.activo ? '#2e7d32' : '#777'};
+                        color:white;
+                        text-decoration:${t.activo ? 'none' : 'line-through'};
+                    ">
+                    ${t.nombre}
+                </span> `).join("") : ""; const coloresAdmin = p.colores ? p.colores.map((c, index) => `
+        <span onclick="toggleColor('${key}', ${index})" style="
+                        width:25px;
+                        height:25px;
+                        border-radius:50%;
+                        display:inline-block;
+                        margin:4px;
+                        cursor:pointer;
+                        background:${c.nombre};
+                        opacity:${c.activo ? '1' : '0.3'};
+                        border:${c.activo ? 'none' : '3px solid red'};
+                    ">
+                </span> `).join("") : ""; const div = document.createElement("div"); div.className = "producto"; div.innerHTML = `
+        <button class="btn-eliminar" onclick="eliminarProducto('${key}')">🗑</button>
+
+        <img src="${p.imagenes && p.imagenes[0] ? p.imagenes[0] : 'https://via.placeholder.com/190'}">
+
+        <div class="producto-content">
+            <h3>${p.nombre}</h3>
+            <p>${p.descripcion}</p>
+            <p>Precio: S/ ${p.precioFinal}</p>
+            <p>Stock: ${p.cantidad}</p>
+            <p style="font-size:12px;color:#aaa;">ID: ${p.idProducto}</p>
+
+            <div><strong>Colores:</strong><br>${coloresAdmin}</div>
+            <div><strong>Tallas:</strong><br>${tallasAdmin}</div>
+
+            <div style="margin-top:10px;">
+                <button class="vender-btn" onclick="registrarVenta('${key}', ${p.cantidad})">
+                        Vender
+                    </button>
+
+                <button class="vender-btn" style="background:orange;" onclick="reembolsar('${key}', ${p.cantidad}, ${p.stockMaximo})">
+                        Reembolsar
+                    </button>
+            </div>
+        </div>
+        `; contenedor.appendChild(div); }); }); window.eliminarProducto = function(key) { const confirmar1 = confirm("¿Eliminar producto?"); if (!confirmar1) return; const confirmar2 = confirm("⚠ ¿Estás seguro de eliminar este producto?"); if (!confirmar2) return;
+        remove(ref(database, "productos/" + key)) .then(() => { alert("✅ Producto eliminado correctamente."); }) .catch((error)=> { alert("❌ Error al eliminar: " + error.message); }); }; window.registrarVenta = function(key, cantidadActual) { if(cantidadActual
+        <=0 ){ alert( "No hay stock disponible"); return; } update(ref(database, "productos/" + key), { cantidad: cantidadActual - 1 }); }; window.reembolsar=function(key, cantidadActual, stockMaximo) { if(cantidadActual>= stockMaximo){ alert("Stock ya completo"); return; } update(ref(database, "productos/" + key), { cantidad: cantidadActual + 1 }); }; window.filtrarProductos = function() { const texto = document.getElementById("buscador").value.toLowerCase();
+            const productos = document.querySelectorAll(".producto"); productos.forEach(prod => { const id = (prod.getAttribute("data-id") || "").toString().toLowerCase(); const nombre = prod.getAttribute("data-nombre"); if(id.includes(texto) || nombre.includes(texto)){
+            prod.style.display = "flex"; } else { prod.style.display = "none"; } }); }; window.toggleClearBtn = function() { const input = document.getElementById("buscador"); const btn = document.getElementById("clearBtn"); btn.style.display = input.value
+            ? "block" : "none"; }; window.limpiarBuscador = function() { document.getElementById("buscador").value = ""; filtrarProductos(); toggleClearBtn(); }; let colores = []; let tallas = []; window.agregarColor = function() { const input = document.getElementById("inputColor");
+            let valor = input.value.trim(); if (!valor) return; if (colores.length >= 9) { alert("Máximo 9 colores"); return; } if (!valor.startsWith("#")) { valor = "#" + valor; } colores.push(valor); input.value = ""; renderColores(); }; function renderColores()
+            { const cont = document.getElementById("contenedorColores"); cont.innerHTML = ""; colores.forEach((color, index) => { cont.innerHTML += `
+            <div style="
+                width:25px;
+                height:25px;
+                border-radius:50%;
+                background:${color};
+                display:inline-block;
+                margin:4px;
+                cursor:pointer;
+            " onclick="eliminarColor(${index})"></div>
+            `; }); } window.eliminarColor = function(index){ colores.splice(index,1); renderColores(); }; window.agregarTalla = function() { const input = document.getElementById("inputTalla"); const valor = input.value.trim(); if (!valor) return; if (tallas.length
+            >= 7) { alert("Máximo 7 tallas"); return; } tallas.push(valor); input.value = ""; renderTallas(); }; function renderTallas() { const cont = document.getElementById("contenedorTallas"); cont.innerHTML = ""; tallas.forEach((talla, index) =>
+            { cont.innerHTML += `
+            <span style="
+                background:#333;
+                padding:5px 10px;
+                margin:4px;
+                border-radius:5px;
+                display:inline-block;
+                cursor:pointer;
+            " onclick="eliminarTalla(${index})">
+                ${talla}
+            </span> `; }); } window.eliminarTalla = function(index){ tallas.splice(index,1); renderTallas(); }; window.toggleTalla = function(productKey, index) { const productoRef = ref(database, "productos/" + productKey); onValue(productoRef,
+            (snapshot) => { const producto = snapshot.val(); producto.tallas[index].activo = !producto.tallas[index].activo; update(productoRef, { tallas: producto.tallas }); }, { onlyOnce: true }); }; window.toggleColor = function(productKey, index)
+            { const productoRef = ref(database, "productos/" + productKey); onValue(productoRef, (snapshot) => { const producto = snapshot.val(); producto.colores[index].activo = !producto.colores[index].activo; update(productoRef, { colores: producto.colores
+            }); }, { onlyOnce: true }); };
+
+
+    </script>
+</body>
+
+</html>

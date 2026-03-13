@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modalContenido {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+    <div id="ventanaCompra" class="modal">
+        <div class="modalContenido">
+
+            <h2>Confirmar pedido</h2>
+
+            <input id="nombreCliente" placeholder="Nombre completo">
+            <input id="dniCliente" placeholder="DNI">
+            <input id="ciudadCliente" placeholder="Ciudad">
+            <input id="celularCliente" placeholder="Celular">
+            <textarea id="notaCliente" placeholder="Notas (opcional)"></textarea>
+
+            <button id="confirmarPedido">Enviar Pedido</button>
+
+        </div>
+    </div>
+</body>
+
+</html>
