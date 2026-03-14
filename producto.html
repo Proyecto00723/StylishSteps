@@ -156,6 +156,16 @@
             width: 100%;
             border-radius: 10px;
         }
+        
+        img {
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        img,
+        video {
+            pointer-events: auto;
+        }
     </style>
 </head>
 
@@ -227,12 +237,12 @@
         = productoActual.stock || 0; document.getElementById("idProductoMostrar").innerText = productoActual.idProducto; const precioDiv = document.getElementById("precio"); precioDiv.innerHTML = productoActual.descuento > 0 ? `S/ ${productoActual.precioFinal}
         <span>S/ ${productoActual.precio}</span>` : `S/ ${productoActual.precio}`; const estado = document.getElementById("estadoStock"); if(productoActual.stock > 0){ estado.innerText=" (Disponible)"; estado.classList.add("stock-ok"); }else{ estado.innerText="(Agotado)";
         estado.classList.add("stock-no"); document.getElementById("btnComprar").disabled=true; } const visor = document.getElementById("visorPrincipal"); const mini = document.getElementById("miniaturas"); productoActual.imagenes.forEach((img,i)=>{ if(i==0){
-        visor.innerHTML = `<img src="${img}">`; } const im = document.createElement("img"); im.src = img; im.onclick = ()=>{ visor.innerHTML = `<img src="${img}">`; }; mini.appendChild(im); }); if(productoActual.video){ const miniVideo = document.createElement("img");
-        miniVideo.src = productoActual.imagenes[0]; miniVideo.style.opacity="0.7"; miniVideo.onclick = ()=>{ visor.innerHTML = `
-        <video controls autoplay style="width:100%;border-radius:10px;">
-                <source src="${productoActual.video}" type="video/mp4">
-            </video> `; }; mini.appendChild(miniVideo); }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{ if(!t.activo)
-        return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); const coloresDiv=document.getElementById("colores");
+        visor.innerHTML = `<img src="${img}">`; } const im = document.createElement("img"); im.src = img; im.draggable = false; im.onclick = ()=>{ visor.innerHTML = `<img src="${img}">`; }; mini.appendChild(im); }); if(productoActual.video){ const miniVideo
+        = document.createElement("img"); miniVideo.src = productoActual.imagenes[0]; miniVideo.style.opacity="0.7"; miniVideo.onclick = ()=>{ visor.innerHTML = `
+        <video controls controlsList="nodownload" disablePictureInPicture autoplay style="width:100%;border-radius:10px;">
+    <source src="${productoActual.video}" type="video/mp4">
+</video>`; }; mini.appendChild(miniVideo); }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{
+        if(!t.activo) return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); const coloresDiv=document.getElementById("colores");
         if(productoActual.colores && productoActual.colores.length>0){ productoActual.colores.forEach(c=>{ const sp=document.createElement("span"); sp.style.background=c.nombre; sp.onclick=()=>{ document.querySelectorAll(".colores span") .forEach(x=>x.classList.remove("activo"));
         sp.classList.add("activo"); colorSeleccionado=c.nombre; validar(); }; coloresDiv.appendChild(sp); }); }else{ coloresDiv.innerHTML= "Sin colores disponibles"; colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar");
         if(productoActual.colores && productoActual.colores.length>0){ btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex";
@@ -243,6 +253,28 @@
 
     </script>
 
+    <script>
+        document.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+        });
+    </script>
+    <script>
+        document.onkeydown = function(e) {
+
+            if (e.keyCode == 123) {
+                return false;
+            }
+
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                return false;
+            }
+
+            if (e.ctrlKey && e.keyCode == 85) {
+                return false;
+            }
+
+        };
+    </script>
 </body>
 
 </html>
