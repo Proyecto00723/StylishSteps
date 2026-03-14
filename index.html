@@ -105,6 +105,11 @@
             object-fit: cover;
         }
         
+        .producto img {
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
         .producto h3 {
             margin: 10px 0 5px;
         }
@@ -194,6 +199,11 @@
             color: #fff;
             text-align: center;
             padding: 1rem;
+        }
+        
+        img {
+            user-select: none;
+            -webkit-user-drag: none;
         }
     </style>
 </head>
@@ -301,7 +311,7 @@
         ">
             ${t.nombre}
         </span> `).join("") : ""; div.innerHTML = ` ${agotado} ${oferta}
-            <img src="${p.imagenes && p.imagenes[0] ? p.imagenes[0] : ''}" alt="${p.nombre}">
+            <img src="${p.imagenes && p.imagenes[0] ? p.imagenes[0] : ''}" alt="${p.nombre}" draggable="false">
             <h3>${p.nombre}</h3>
             ${precioHTML}
             <div>ID: ${p.idProducto || "—"} | Stock: ${p.cantidad}</div>
@@ -311,6 +321,30 @@
             <button onclick="verProducto('${p.idProducto}')">Ver detalles</button> `; contenedor.appendChild(div); }); });
     </script>
     <script type="module" src="app.js"></script>
+
+    <script>
+        document.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+        });
+    </script>
+
+    <script>
+        document.onkeydown = function(e) {
+
+            if (e.keyCode == 123) {
+                return false;
+            }
+
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                return false;
+            }
+
+            if (e.ctrlKey && e.keyCode == 85) {
+                return false;
+            }
+
+        };
+    </script>
 </body>
 
 </html>
