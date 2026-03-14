@@ -248,7 +248,7 @@
         if(productoActual.colores && productoActual.colores.length>0){ btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex";
         }; document.getElementById("confirmarPedido").onclick=()=>{ const nombre=document.getElementById("nombreCliente").value; const dni=document.getElementById("dniCliente").value; const ciudad=document.getElementById("ciudadCliente").value; const
         celular=document.getElementById("celularCliente").value; const nota=document.getElementById("notaCliente").value; const precioFinal = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje=`
-        Hola, quiero hacer un pedido.<br> 👤 Datos del Cliente<br> Nombre: ${nombre} <br> DNI: ${dni} <br> Ciudad: ${ciudad}<br> Celular: ${celular}<br> Notas: ${nota}<br> <br> 📦 Producto ${productoActual.nombre} <br> ID: ${productoActual.idProducto}<br> Talla: ${tallaSeleccionada} <br> Color: ${colorSeleccionado}
+        <p> Hola, quiero hacer un pedido.</p> 👤 Datos del Cliente<br> Nombre: ${nombre} <br> DNI: ${dni} <br> Ciudad: ${ciudad}<br> Celular: ${celular}<br> Notas: ${nota}<br> <br> 📦 Producto ${productoActual.nombre} <br> ID: ${productoActual.idProducto}<br> Talla: ${tallaSeleccionada} <br> Color: ${colorSeleccionado}
         Precio: S/ ${precioFinal} <br> TOTAL: S/ ${precioFinal}   |    Fecha: ${fecha} `; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
 
     </script>
