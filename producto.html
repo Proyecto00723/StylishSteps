@@ -2,332 +2,263 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fan Of My Style</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto | Stylish Steps</title>
+
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #1c1c1c;
+            font-family: Arial;
+            background: #f5f5f5
         }
         
-        header {
-            background-color: rgba(0, 0, 0, 0.7);
-            position: relative;
-            text-align: center;
-            color: white;
-            height: 500px;
-            clip-path: ellipse(100% 85% at 50% 0%);
-            overflow: hidden;
-        }
-        
-        header img {
-            width: 100px;
-        }
-        
-        .fondo-header {
-            background: url('imagen.png') no-repeat center center/cover;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        
-        .overlay-header {
-            background-color: rgba(0, 0, 0, 0.267);
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
-        
-        .contenido-header {
-            position: relative;
-            z-index: 3;
-            padding: 90px 15px;
-        }
-        
-        .contenido-header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .contenido-header p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        
-        .contenido-header button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: rgb(255, 195, 31);
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        
-        .productos {
-            background-color: #1c1c1c;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .productos h2 {
-            font-size: 2em;
-            margin-bottom: 30px;
-        }
-        
-        .productos-grid {
+        .contenedor {
+            max-width: 1100px;
+            margin: auto;
+            background: #fff;
             display: flex;
-            justify-content: center;
             flex-wrap: wrap;
-            gap: 30px;
+            padding: 20px;
+            gap: 30px
         }
         
-        .producto {
-            background: white;
-            color: black;
-            border-radius: 8px;
-            padding: 15px;
-            width: 280px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            position: relative;
+        .galeria,
+        .info {
+            flex: 1;
+            min-width: 300px
         }
         
-        .producto img {
-            max-width: 100%;
-            border-radius: 5px;
-            height: 180px;
+        .galeria img {
+            width: 100%;
+            border-radius: 10px
+        }
+        
+        .miniaturas {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px
+        }
+        
+        .miniaturas img {
+            width: 70px;
+            height: 70px;
             object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent
         }
         
-        .producto img {
-            user-select: none;
-            -webkit-user-drag: none;
+        .miniaturas img.active {
+            border-color: #ff7a00
         }
         
-        .producto h3 {
-            margin: 10px 0 5px;
+        .precio {
+            font-size: 28px;
+            color: #ff7a00;
+            font-weight: bold
         }
         
-        .producto p {
-            font-weight: bold;
-            color: #53b62c;
+        .precio span {
+            font-size: 16px;
+            color: gray;
+            text-decoration: line-through;
+            margin-left: 10px
         }
         
-        .producto button {
-            margin: 5px 5px;
-            background-color: #dd1d1d;
+        .bloque {
+            margin-top: 20px
+        }
+        
+        .tallas span,
+        .colores span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            cursor: pointer
+        }
+        
+        .tallas span {
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #eee
+        }
+        
+        .tallas span.inactivo {
+            background: #ccc;
+            text-decoration: line-through;
+            opacity: .5;
+            cursor: not-allowed
+        }
+        
+        .tallas span.activo {
+            border: 2px solid #ff7a00
+        }
+        
+        .colores span {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ccc
+        }
+        
+        .colores span.activo {
+            border: 3px solid #ff7a00
+        }
+        
+        .boton {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background: #ff7a00;
             color: #fff;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer
         }
         
-        .producto button:disabled {
-            background-color: gray;
-            cursor: not-allowed;
-        }
-        
-        .overlay {
+        .modal {
             display: none;
             position: fixed;
-            z-index: 999;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center
         }
         
-        #metodoPago {
+        .modalContenido {
             background: white;
-            max-width: 400px;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            color: rgb(0, 0, 0);
+            padding: 25px;
+            border-radius: 10px;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
         }
         
-        .cerrar {
-            float: right;
-            font-size: 22px;
-            cursor: pointer;
-        }
-        
-        .qr {
-            width: 200px;
-            margin: 10px 0;
-        }
-        
-        .agotado {
-            position: absolute;
-            top: 35px;
-            left: -20px;
-            background: red;
-            color: white;
-            transform: rotate(-45deg);
-            width: 150px;
-            text-align: center;
-            font-size: 0.9em;
+        .stock-ok {
+            color: green;
             font-weight: bold;
-            pointer-events: none;
         }
         
-        .etiqueta-oferta {
-            position: absolute;
-            top: 35px;
-            right: -20px;
-            background-color: orange;
-            color: white;
-            transform: rotate(45deg);
-            width: 150px;
-            text-align: center;
-            font-size: 0.9em;
+        .stock-no {
+            color: red;
             font-weight: bold;
-            pointer-events: none;
         }
         
-        footer {
-            background-color: #ec0c0ce3;
-            color: #fff;
-            text-align: center;
-            padding: 1rem;
+        #visorPrincipal img,
+        #visorPrincipal video {
+            width: 100%;
+            border-radius: 10px;
         }
         
         img {
             user-select: none;
             -webkit-user-drag: none;
         }
+        
+        img,
+        video {
+            pointer-events: auto;
+        }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <div class="fondo-header"></div>
-        <div class="overlay-header"></div>
-        <div class="contenido-header">
-            <img src="descarga.png" alt="Logo" />
-            <h1>Bienvenido a Stylish Steps</h1>
-            <p>Explora el arte de vestir con estilo, elegancia y comodidad para él y para ella.</p>
-            <button onclick="document.getElementById('productos').scrollIntoView({ behavior: 'smooth' })">Comprar ahora</button>
-        </div>
-    </header>
+    <div class="contenedor">
 
-    <section class="productos" id="productos">
-        <h2>Nuestras Nuevas Colecciones</h2>
-        <p>¡Encuentra el match ideal para tus pies.!</p><br>
-
-        <div class="productos-grid" id="vistaProductos">
-            <!-- Se insertan aquí dinámicamente -->
+        <div class="galeria">
+            <div id="visorPrincipal"></div>
+            <div class="miniaturas" id="miniaturas"></div>
         </div>
-    </section>
 
-    <!-- Modal de pago -->
-    <div class="overlay" id="modalOverlay">
-        <div id="metodoPago">
-            <span class="cerrar" onclick="cerrarPago()">×</span>
-            <h3>Métodos de Pago</h3>
-            <p><strong>Yape / Plin:</strong> 912345678</p>
-            <img class="qr" src="QR.jpeg" alt="QR de pago" />
-            <p><strong style="color:rgba(0, 0, 0, 0.432);"> PayPal: No Disponible  </strong> </p>
-            <p><strong>Ubicación del producto:</strong> Paiján</p>
-            <p><strong style="color:rgb(0, 0, 0);">Confirmación por WhatsApp:</strong></p>
-            <a href="https://wa.me/925944615" target="_blank" style="color:rgb(73, 70, 255)">Contactar al encargado</a>
-            <br /><br />
-            <strong style="color:green">✅ ¡Pago Seguro!</strong>
-        </div>
-    </div>
-    <div class="overlay" id="modalDetalle">
-        <div id="detalleProducto" style="background:white; max-width: 400px; margin: 10% auto; padding: 20px; border-radius: 8px; color: black; position: relative; text-align: left;">
-            <span class="cerrar" onclick="cerrarDetalle()" style="position:absolute; top:10px; right:15px;">×</span>
-            <h3 id="detalleTitulo"></h3>
-            <p id="detalleDescripcion"></p>
+        <div class="info">
+
+            <h1 id="nombre"></h1>
+
+            <div class="precio" id="precio"></div>
+
+            <div id="descripcion"></div>
+
+            <div class="bloque">
+                <p><strong>Stock disponible:</strong>
+                    <span id="stock"></span>
+                    <span id="estadoStock"></span>
+                </p>
+
+                <p><strong>ID:</strong>
+                    <span id="idProductoMostrar"></span>
+                </p>
+            </div>
+
+            <div class="bloque">
+                <strong>Talla:</strong>
+                <div class="tallas" id="tallas"></div>
+            </div>
+
+            <div class="bloque">
+                <strong>Color:</strong>
+                <div class="colores" id="colores"></div>
+            </div>
+
+            <button class="boton" id="btnComprar" disabled>Comprar</button>
+
         </div>
     </div>
-    <footer>
-        &copy; 2025 StepPair | match ideal para tus pies!
-    </footer>
-    <script>
-        function abrirPago() {
-            document.getElementById('modalOverlay').style.display = 'block';
-        }
 
-        function cerrarPago() {
-            document.getElementById('modalOverlay').style.display = 'none';
-        }
+    <div class="modal" id="ventanaCompra">
+        <div class="modalContenido">
 
-        function verProducto(id) {
-            window.location.href = `producto.html?id=${id}`;
-        }
+            <h3>Datos del Cliente</h3>
 
-        function cerrarDetalle() {
-            document.getElementById('modalDetalle').style.display = 'none';
-        }
-    </script>
-    <!-- Firebase SDK -->
+            <input id="nombreCliente" placeholder="Nombre completo">
+            <input id="dniCliente" placeholder="DNI">
+            <input id="ciudadCliente" placeholder="Ciudad">
+            <input id="celularCliente" placeholder="Celular">
+            <textarea id="notaCliente" placeholder="Notas"></textarea>
+
+            <button id="confirmarPedido">Enviar por WhatsApp</button>
+
+        </div>
+    </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"; import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; const firebaseConfig = { apiKey: "AIzaSyCCDSrE_hWvYYgjNwTX85leeU3vHBLBJsY",
-        authDomain: "stylishsteps-10fc4.firebaseapp.com", databaseURL: "https://stylishsteps-10fc4-default-rtdb.firebaseio.com", projectId: "stylishsteps-10fc4", storageBucket: "stylishsteps-10fc4.firebasestorage.app", messagingSenderId: "32645603346",
-        appId: "1:32645603346:web:ae022c525a85aaf7ad38cb", measurementId: "G-369VZP753G" }; const app = initializeApp(firebaseConfig); const db = getDatabase(app); const productosRef = ref(db, "productos"); onValue(productosRef, (snapshot) => { const
-        contenedor = document.getElementById("vistaProductos"); contenedor.innerHTML = ""; snapshot.forEach((childSnapshot) => { const p = childSnapshot.val(); const div = document.createElement("div"); div.className = "producto"; const agotado = p.cantidad
-        <=0 ? `<div class="agotado">NO DISPONIBLE</div>` : ""; const oferta = p.descuento > 0 ? `
-            <div class="etiqueta-oferta">${p.descuento}% OFF</div>` : ""; const precioHTML = p.descuento > 0 ? `
-            <p>
-                <span style="text-decoration: line-through; color: gray">
-                    S/ ${p.precio}
-                </span><br>
-                <strong style="color: orange;">
-                    S/ ${p.precioFinal}
-                </strong>
-            </p>` : `
-            <p>S/ ${p.precio}</p>`; const coloresHTML = p.colores ? p.colores.map(c => `
-            <span style="
-            width:20px;
-            height:20px;
-            border-radius:50%;
-            background:${c.nombre};
-            display:inline-block;
-            margin:3px;
-            opacity:${c.activo ? '1' : '0.3'};
-            border:${c.activo ? 'none' : '2px solid red'};
-        "></span> `).join("") : ""; const tallasHTML = p.tallas ? p.tallas.map(t => `
-            <span style="
-            background:${t.activo ? '#444' : '#999'};
-            color:white;
-            padding:4px 8px;
-            margin:3px;
-            border-radius:4px;
-            display:inline-block;
-            text-decoration:${t.activo ? 'none' : 'line-through'};
-        ">
-            ${t.nombre}
-        </span> `).join("") : ""; div.innerHTML = ` ${agotado} ${oferta}
-            <img src="${p.imagenes && p.imagenes[0] ? p.imagenes[0] : ''}" alt="${p.nombre}" draggable="false">
-            <h3>${p.nombre}</h3>
-            ${precioHTML}
-            <div>ID: ${p.idProducto || "—"} | Stock: ${p.cantidad}</div>
-            <div><strong>Color:</strong><br>${coloresHTML}</div>
-            <div><strong>Tallas:</strong><br>${tallasHTML}</div>
-            <button onclick="abrirPago()" ${p.cantidad <=0 ? 'disabled' : ''}>Comprar</button>
-            <button onclick="verProducto('${p.idProducto}')">Ver detalles</button> `; contenedor.appendChild(div); }); });
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"; import { getDatabase, ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"; const firebaseConfig = {
+        apiKey:"AIzaSyCCDSr", authDomain:"stylishsteps-10fc4.firebaseapp.com", databaseURL:"https://stylishsteps-10fc4-default-rtdb.firebaseio.com", projectId:"stylishsteps-10fc4" }; const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+        const params = new URLSearchParams(window.location.search); const idProducto = Number(params.get("id")); let tallaSeleccionada = null; let colorSeleccionado = null; let productoActual = null; const q = query( ref(db,"productos"), orderByChild("idProducto"),
+        equalTo(idProducto) ); const snap = await get(q); snap.forEach(s=>{ productoActual = s.val(); console.log(productoActual); document.getElementById("nombre").innerText = productoActual.nombre; document.getElementById("descripcion").innerText =
+        productoActual.descripcion; const stockReal = Number(productoActual.stock ?? productoActual.cantidad ?? 0); document.getElementById("stock").innerText = stockReal; document.getElementById("idProductoMostrar").innerText = productoActual.idProducto;
+        const precioDiv = document.getElementById("precio"); precioDiv.innerHTML = productoActual.descuento > 0 ? `S/ ${productoActual.precioFinal}
+        <span>S/ ${productoActual.precio}</span>` : `S/ ${productoActual.precio}`; const estado = document.getElementById("estadoStock"); if(stockReal > 0){ estado.innerText=" (Disponible)"; estado.classList.add("stock-ok"); }else{ estado.innerText="(Agotado)";
+        estado.classList.add("stock-no"); document.getElementById("btnComprar").disabled=true; } const visor = document.getElementById("visorPrincipal"); const mini = document.getElementById("miniaturas"); productoActual.imagenes.forEach((img,i)=>{ if(i==0){
+        visor.innerHTML = `<img src="${img}">`; } const im = document.createElement("img"); im.src = img; im.draggable = false; im.onclick = ()=>{ visor.innerHTML = `<img src="${img}">`; }; mini.appendChild(im); }); if(productoActual.video){ const miniVideo
+        = document.createElement("img"); miniVideo.src = productoActual.imagenes[0]; miniVideo.style.opacity="0.7"; miniVideo.onclick = ()=>{ visor.innerHTML = `
+        <video controls controlsList="nodownload" disablePictureInPicture autoplay style="width:100%;border-radius:10px;">
+    <source src="${productoActual.video}" type="video/mp4">
+</video>`; }; mini.appendChild(miniVideo); }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{
+        if(!t.activo) return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); const coloresDiv=document.getElementById("colores");
+        if(productoActual.colores && productoActual.colores.length>0){ productoActual.colores.forEach(c=>{ const sp=document.createElement("span"); sp.style.background=c.nombre; sp.onclick=()=>{ document.querySelectorAll(".colores span") .forEach(x=>x.classList.remove("activo"));
+        sp.classList.add("activo"); colorSeleccionado=c.nombre; validar(); }; coloresDiv.appendChild(sp); }); }else{ coloresDiv.innerHTML= "Sin colores disponibles"; colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar");
+        if(productoActual.colores && productoActual.colores.length>0){ btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex";
+        }; document.getElementById("confirmarPedido").onclick=()=>{ const nombre=document.getElementById("nombreCliente").value; const dni=document.getElementById("dniCliente").value; const ciudad=document.getElementById("ciudadCliente").value; const
+        celular=document.getElementById("celularCliente").value; const nota=document.getElementById("notaCliente").value; const precioFinal = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje=`
+        Hola, quiero hacer un pedido. 👤 Datos del Cliente Nombre: ${nombre} DNI: ${dni} Ciudad: ${ciudad} Celular: ${celular} Notas: ${nota} 📦 Producto ${productoActual.nombre} ID: ${productoActual.idProducto} Talla: ${tallaSeleccionada} Color: ${colorSeleccionado}
+        Precio: S/ ${precioFinal} TOTAL: S/ ${precioFinal} Fecha: ${fecha} `; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
+
     </script>
-    <script type="module" src="app.js"></script>
 
     <script>
         document.addEventListener("contextmenu", function(e) {
             e.preventDefault();
         });
     </script>
-
     <script>
         document.onkeydown = function(e) {
 
