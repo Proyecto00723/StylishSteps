@@ -249,7 +249,12 @@
                         opacity:${c.activo ? '1' : '0.3'};
                         border:${c.activo ? 'none' : '3px solid red'};
                     ">
-                </span> `).join("") : ""; const div = document.createElement("div"); div.className = "producto"; div.innerHTML = `
+                </span> `).join("") : ""; const div = document.createElement("div");
+div.className = "producto";
+
+div.setAttribute("data-id", p.idProducto);
+div.setAttribute("data-nombre", p.nombre.toLowerCase());
+ div.innerHTML = `
         <button class="btn-eliminar" onclick="eliminarProducto('${key}')">🗑</button>
 
         <img src="${p.imagenes && p.imagenes[0] ? p.imagenes[0] : 'https://via.placeholder.com/190'}">
