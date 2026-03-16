@@ -166,6 +166,61 @@
         video {
             pointer-events: auto;
         }
+        
+        .modalContenido {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: aparecer .25s ease;
+        }
+        
+        .modalContenido input,
+        .modalContenido textarea {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        
+        .modalContenido button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #25D366;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modalCerrar {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .modalCerrar:hover {
+            color: red;
+        }
+        
+        @keyframes aparecer {
+            from {
+                transform: scale(.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -217,6 +272,8 @@
 
             <h3>Datos del Cliente</h3>
 
+            <span class="modalCerrar" id="cerrarModal">✖</span>
+
             <input id="nombreCliente" placeholder="Nombre completo">
             <input id="dniCliente" placeholder="DNI">
             <input id="ciudadCliente" placeholder="Ciudad">
@@ -243,14 +300,32 @@
         <video controls controlsList="nodownload" disablePictureInPicture autoplay style="width:100%;border-radius:10px;">
     <source src="${productoActual.video}" type="video/mp4">
 </video>`; }; mini.appendChild(miniVideo); }; const tallasDiv = document.getElementById("tallas"); productoActual.tallas.forEach(t=>{ const sp=document.createElement("span"); sp.innerText=t.nombre; if(!t.activo) sp.classList.add("inactivo"); sp.onclick=()=>{
-        if(!t.activo) return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); const coloresDiv=document.getElementById("colores");
-        if(productoActual.colores && productoActual.colores.length>0){ productoActual.colores.forEach(c=>{ const sp=document.createElement("span"); sp.style.background=c.nombre; sp.onclick=()=>{ document.querySelectorAll(".colores span") .forEach(x=>x.classList.remove("activo"));
-        sp.classList.add("activo"); colorSeleccionado=c.nombre; validar(); }; coloresDiv.appendChild(sp); }); }else{ coloresDiv.innerHTML= "Sin colores disponibles"; colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar");
-        if(productoActual.colores && productoActual.colores.length>0){ btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex";
-        }; document.getElementById("confirmarPedido").onclick=()=>{ const nombre=document.getElementById("nombreCliente").value; const dni=document.getElementById("dniCliente").value; const ciudad=document.getElementById("ciudadCliente").value; const
-        celular=document.getElementById("celularCliente").value; const nota=document.getElementById("notaCliente").value; const precioFinal = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje=`
-        Hola, quiero hacer un pedido. 👤 Datos del Cliente Nombre: ${nombre} DNI: ${dni} Ciudad: ${ciudad} Celular: ${celular} Notas: ${nota} 📦 Producto ${productoActual.nombre} ID: ${productoActual.idProducto} Talla: ${tallaSeleccionada} Color: ${colorSeleccionado}
-        Precio: S/ ${precioFinal} TOTAL: S/ ${precioFinal} Fecha: ${fecha} `; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
+        if(!t.activo) return; document.querySelectorAll(".tallas span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); tallaSeleccionada=t.nombre; validar(); }; tallasDiv.appendChild(sp); }); document.getElementById("ventanaCompra").onclick=(e)=>{
+        if(e.target.id==="ventanaCompra"){ document.getElementById("ventanaCompra").style.display="none"; } }; const coloresDiv=document.getElementById("colores"); if(productoActual.colores && productoActual.colores.length>0){ productoActual.colores.forEach(c=>{
+        const sp=document.createElement("span"); sp.style.background=c.nombre; sp.onclick=()=>{ document.querySelectorAll(".colores span") .forEach(x=>x.classList.remove("activo")); sp.classList.add("activo"); colorSeleccionado=c.nombre; validar(); };
+        coloresDiv.appendChild(sp); }); }else{ coloresDiv.innerHTML= "Sin colores disponibles"; colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar"); if(productoActual.colores && productoActual.colores.length>0){
+        btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex"; }; document.getElementById("confirmarPedido").onclick=()=>{
+        const nombre=document.getElementById("nombreCliente").value; const dni=document.getElementById("dniCliente").value; const ciudad=document.getElementById("ciudadCliente").value; const celular=document.getElementById("celularCliente").value; const
+        nota=document.getElementById("notaCliente").value; const precioFinal = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje = 
+`Hola, quiero hacer un pedido.
+
+_*Datos del Cliente*_
+_*-----------------------------------*_
+*Nombre:* \`${nombre}\`
+*DNI:* \`${dni}\`
+*Ciudad:* \`${ciudad}\`
+*Celular:* \`${celular}\`
+_*Notas:*_ _${nota}_
+
+_*Producto ${productoActual.nombre}*_
+_*-----------------------------------*_
+*ID:* \`${productoActual.idProducto}\`       *Talla:* \`${tallaSeleccionada}\`
+*Color:* \`${colorSeleccionado}\`
+*Precio:* \`S/ ${precioFinal}\`  _*TOTAL:*_ \`S/ ${precioFinal}\`
+
+_*-----------------------------------*_
+
+*Fecha:* *_${fecha}_*`; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
 
     </script>
 
