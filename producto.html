@@ -307,9 +307,26 @@
         colorSeleccionado="Sin color"; } }); function validar(){ const btn = document.getElementById("btnComprar"); if(productoActual.colores && productoActual.colores.length>0){ btn.disabled = !(tallaSeleccionada && colorSeleccionado); }else{ btn.disabled
         = !tallaSeleccionada; } } document.getElementById("btnComprar").onclick=()=>{ document.getElementById("ventanaCompra").style.display="flex"; }; document.getElementById("confirmarPedido").onclick=()=>{ const nombre=document.getElementById("nombreCliente").value;
         const dni=document.getElementById("dniCliente").value; const ciudad=document.getElementById("ciudadCliente").value; const celular=document.getElementById("celularCliente").value; const nota=document.getElementById("notaCliente").value; const precioFinal
-        = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje = `Hola, quiero hacer un pedido. _*Datos del Cliente*_ _*-----------------------------------*_ *Nombre:* \`${nombre}\` *DNI:*
-        \`${dni}\` *Ciudad:* \`${ciudad}\` *Celular:* \`${celular}\` _*Notas:*_ _${nota}_ _*Producto ${productoActual.nombre}*_ _*-----------------------------------*_ *ID:* \`${productoActual.idProducto}\` *Talla:* \`${tallaSeleccionada}\` *Color:* \`${colorSeleccionado}\`
-        *Precio:* \`S/ ${precioFinal}\` _*TOTAL:*_ \`S/ ${precioFinal}\` _*-----------------------------------*_ *Fecha:* *_${fecha}_*`; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
+        = productoActual.precioFinal || productoActual.precio; const fecha=new Date().toLocaleString("es-PE"); const mensaje = 
+`Hola, quiero hacer un pedido.
+
+_*Datos del Cliente*_
+_*-----------------------------------*_
+*Nombre:* \`${nombre}\`
+*DNI:* \`${dni}\`
+*Ciudad:* \`${ciudad}\`
+*Celular:* \`${celular}\`
+_*Notas:*_ _${nota}_
+
+_*Producto ${productoActual.nombre}*_
+_*-----------------------------------*_
+*ID:* \`${productoActual.idProducto}\`       *Talla:* \`${tallaSeleccionada}\`
+*Color:* \`${colorSeleccionado}\`
+*Precio:* \`S/ ${precioFinal}\`  _*TOTAL:*_ \`S/ ${precioFinal}\`
+
+_*-----------------------------------*_
+
+*Fecha:* *_${fecha}_*`; const url=`https://wa.me/51925944615?text=${encodeURIComponent(mensaje)}`; window.open(url,"_blank"); };
 
     </script>
 
